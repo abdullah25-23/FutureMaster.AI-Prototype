@@ -1,144 +1,86 @@
-import { Screen } from '../types';
+import { useApp } from '../state';
+import { Card, C, Pill, Screen, SectionTitle } from '../components/ui';
+import { weightedFit, fitColor, fitLabel } from '../data/careers';
+import { dimensionMeta } from '../data/content';
+import { DimensionKey } from '../types';
 
-const C = {
-  bg: '#0D1117', card: '#1C1F2E', elevated: '#252A3A',
-  border: '#2D3548', text: '#FFFFFF', sub: '#A0AEC0', muted: '#6B7280',
-  cyan: '#00D2FF', indigo: '#6366F1', violet: '#7C3AED', success: '#00E676',
+const subjectWeights: Record<string, { w: Partial<Record<DimensionKey, number>>; why: string }> = {
+  Mathematics: { w: { analyticalThinking: 2, technologyInterest: 1 }, why: 'matches your interest in logical problem solving' },
+  Physics: { w: { analyticalThinking: 2, handsOnWork: 1, researchInterest: 1 }, why: 'connects to how things work and hands-on thinking' },
+  Chemistry: { w: { researchInterest: 2, handsOnWork: 1 }, why: 'fits curiosity about how and why things happen' },
+  Biology: { w: { helpingPeople: 2, researchInterest: 1 }, why: 'links to caring for people and understanding life' },
+  'Computer Science': { w: { technologyInterest: 2, analyticalThinking: 1 }, why: 'matches your curiosity about technology' },
+  English: { w: { communication: 2, leadership: 1 }, why: 'supports communication and sharing ideas' },
+  'Arts / Humanities': { w: { creativity: 2, communication: 1, helpingPeople: 1 }, why: 'fits creativity and interest in people and ideas' },
 };
 
-const topInterests = ['Technology', 'Analytical Thinking', 'Research Interest'];
-
-const subjectRecommendations = [
-  { name: 'Computer Science', icon: '💻', color: '#6366F1', reason: 'Directly aligns with your technology interest and analytical thinking' },
-  { name: 'Mathematics', icon: '📐', color: '#00D2FF', reason: 'Supports logical and analytical development across fields' },
-  { name: 'Physics', icon: '⚡', color: '#7C3AED', reason: 'Builds problem-solving skills valued in technology and engineering' },
+const directions = [
+  { id: 'ICS', label: 'ICS', w: { technologyInterest: 3, analyticalThinking: 2 }, subs: ['Mathematics', 'Computer Science'], areas: 'Technology & Computing', cluster: 'tech' },
+  { id: 'FSc Pre-Engineering', label: 'FSc Pre-Engineering', w: { analyticalThinking: 3, handsOnWork: 2, technologyInterest: 1 }, subs: ['Mathematics', 'Physics'], areas: 'Engineering & Robotics', cluster: 'engineering' },
+  { id: 'FSc Pre-Medical', label: 'FSc Pre-Medical', w: { helpingPeople: 3, researchInterest: 2 }, subs: ['Biology', 'Chemistry'], areas: 'Medical & Health Sciences', cluster: 'health' },
+  { id: 'Arts / Humanities', label: 'Arts / Humanities', w: { communication: 2, creativity: 2, helpingPeople: 1, leadership: 1 }, subs: ['English', 'Arts / Humanities'], areas: 'Media, Social Sciences and Law', cluster: 'social' },
 ];
 
-const futureDirections = [
-  { label: 'ICS (Computer Science)', color: '#6366F1', icon: '💻', strength: 'Strong Match', desc: 'Leads to computing, software, and AI careers' },
-  { label: 'FSc Pre-Engineering', color: '#7C3AED', icon: '⚙️', strength: 'Good Match', desc: 'Leads to engineering, physics-based careers' },
-  { label: 'FSc Pre-Medical', color: '#FF5252', icon: '🏥', strength: 'Worth Exploring', desc: 'Leads to medicine, pharmacy, health sciences' },
-  { label: 'Arts / Humanities', color: '#EC4899', icon: '📖', strength: 'Worth Exploring', desc: 'Leads to psychology, law, social sciences' },
-];
+const parse = (s?: string) => { const m = (s ?? '').match(/\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; };
 
-export default function SubjectGuidanceScreen({ navigate }: { navigate: (s: Screen) => void }) {
+export default function SubjectGuidanceScreen() {
+  const { profile, dims, topDims, nav, profileReady } = useApp();
+  const fav = profile.favouriteSubjects, hard = profile.difficultSubjects;
+  const marksOf = (s: string) => { const e = Object.entries(profile.subjectMarks).find(([k]) => k.toLowerCase().includes(s.toLowerCase()) || s.toLowerCase().includes(k.toLowerCase())); return e ? parse(e[1]) : null; };
+
+  const subjects = Object.entries(subjectWeights).map(([name, d]) => {
+    let score = weightedFit(d.w, dims) + (fav.includes(name) ? 10 : 0);
+    const notes: string[] = [];
+    if (fav.includes(name)) notes.push('one of your favourites');
+    if (hard.includes(name)) notes.push('you find it challenging, so steady practice may help');
+    const m = marksOf(name);
+    if (m !== null && m >= 70) notes.push('your marks here are encouraging');
+    return { name, score, why: d.why, notes };
+  }).sort((a, b) => b.score - a.score).slice(0, 4);
+
+  const top2 = topDims.slice(0, 2).map(t => dimensionMeta[t.key].label.toLowerCase()).join(' and ');
+
   return (
-    <div className="w-full h-full flex flex-col" style={{ background: C.bg }}>
-      <div style={{
-        background: 'linear-gradient(160deg, #0D1117 0%, #111525 100%)',
-        padding: '48px 20px 18px',
-        borderRadius: '0 0 24px 24px',
-        borderBottom: `1px solid ${C.border}`,
-      }}>
-        <div className="flex items-center gap-3 mb-2">
-          <button onClick={() => navigate('class910-dashboard')} style={{
-            background: C.card, border: `1px solid ${C.border}`,
-            borderRadius: '10px', width: '36px', height: '36px',
-            display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
-          }}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.sub} strokeWidth="2">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-          </button>
-          <div>
-            <div style={{ fontFamily: 'Inter', fontSize: '10px', color: C.cyan, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '2px' }}>Class 9-10</div>
-            <h2 style={{ fontFamily: 'Poppins', fontSize: '18px', fontWeight: 700, color: C.text, margin: 0 }}>Subject Guidance</h2>
-          </div>
+    <Screen title="Subject Guidance">
+      <p style={{ margin: '0 0 16px', fontSize: 13, color: C.sub, lineHeight: 1.5 }}>
+        {profileReady ? `Your strongest interests so far are ${top2}. ` : `Early signals point toward ${top2}. `}
+        {profile.studyGroup && `You are exploring ${profile.studyGroup}. `}These are ideas to explore, not decisions.
+      </p>
+
+      <SectionTitle>Subjects Worth Exploring</SectionTitle>
+      {subjects.map((s, i) => (
+        <div key={s.name} className="stagger" style={{ '--i': i, marginBottom: 8 } as React.CSSProperties}>
+          <Card style={{ padding: 14 }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 14 }}>{s.name}</p>
+            <p style={{ margin: '3px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>
+              This {s.why}{s.notes.length ? `; ${s.notes.join('; ')}` : ''}.
+            </p>
+          </Card>
         </div>
-      </div>
+      ))}
 
-      <div className="flex-1 mobile-scroll px-4 py-4 flex flex-col gap-4" style={{ paddingBottom: '24px' }}>
-
-        {/* Current interest profile */}
-        <div style={{ background: C.card, borderRadius: '14px', padding: '14px', border: `1px solid ${C.border}` }}>
-          <div style={{ fontFamily: 'Inter', fontSize: '10px', color: C.muted, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '8px' }}>Based on Your Current Profile</div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-            {topInterests.map(interest => (
-              <span key={interest} style={{
-                fontFamily: 'Inter', fontSize: '11px', fontWeight: 600,
-                background: 'rgba(0,210,255,0.1)', color: C.cyan,
-                border: '1px solid rgba(0,210,255,0.2)', borderRadius: '6px', padding: '4px 10px',
-              }}>{interest}</span>
-            ))}
-          </div>
-        </div>
-
-        {/* Subjects worth exploring */}
-        <div>
-          <h3 style={{ fontFamily: 'Poppins', fontSize: '13px', fontWeight: 700, color: C.text, margin: '0 0 10px 0' }}>Subjects Worth Exploring</h3>
-          <div className="flex flex-col gap-3">
-            {subjectRecommendations.map(subject => (
-              <div key={subject.name} style={{
-                background: C.card, borderRadius: '14px', padding: '14px',
-                border: `1px solid ${subject.color}25`,
-                boxShadow: `0 0 10px ${subject.color}10`,
-              }}>
-                <div className="flex items-center gap-10px" style={{ gap: '10px', marginBottom: '6px' }}>
-                  <div style={{
-                    width: '36px', height: '36px', borderRadius: '10px',
-                    background: `${subject.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0,
-                  }}>{subject.icon}</div>
-                  <span style={{ fontFamily: 'Poppins', fontSize: '14px', fontWeight: 700, color: subject.color }}>{subject.name}</span>
-                </div>
-                <p style={{ fontFamily: 'Inter', fontSize: '11px', color: C.muted, margin: 0, lineHeight: '1.5' }}>{subject.reason}</p>
+      <div style={{ marginTop: 20 }}><SectionTitle>Possible Future Directions</SectionTitle></div>
+      {directions.map((d, i) => {
+        const fit = fitLabel(weightedFit(d.w, dims));
+        const hardOnes = d.subs.filter(s => hard.some(h => h.toLowerCase().includes(s.toLowerCase())));
+        const lowMarks = d.subs.filter(s => { const m = marksOf(s); return m !== null && m < 60; });
+        const note = hardOnes.length ? `You find ${hardOnes.join(' and ')} challenging. Extra practice there could help if you explore this path.`
+          : lowMarks.length ? `Your marks in ${lowMarks.join(' and ')} are still building. There is time to strengthen them.`
+          : `Key subjects: ${d.subs.join(' and ')}.`;
+        return (
+          <div key={d.id} className="stagger" style={{ '--i': i + 4, marginBottom: 10 } as React.CSSProperties}>
+            <Card onClick={() => nav('career-list', { clusterId: d.cluster })}>
+              <div className="flex items-center justify-between" style={{ gap: 8 }}>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: 15, fontFamily: 'Poppins' }}>{d.label}</p>
+                <Pill text="Path Worth Exploring" color={C.cyan} />
               </div>
-            ))}
+              <p style={{ margin: '6px 0 0', fontSize: 12, color: fitColor(fit), fontWeight: 600 }}>Interest fit hint: {fit}</p>
+              <p style={{ margin: '4px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>{note}</p>
+              <p style={{ margin: '8px 0 0', fontSize: 12, color: C.cyan }}>See career areas: {d.areas} →</p>
+            </Card>
           </div>
-        </div>
-
-        {/* Possible future directions */}
-        <div>
-          <h3 style={{ fontFamily: 'Poppins', fontSize: '13px', fontWeight: 700, color: C.text, margin: '0 0 10px 0' }}>Possible Future Directions</h3>
-          <div className="flex flex-col gap-2.5">
-            {futureDirections.map(dir => (
-              <div key={dir.label} style={{
-                background: C.card, borderRadius: '14px', padding: '13px 14px',
-                border: `1px solid ${C.border}`,
-                display: 'flex', alignItems: 'center', gap: '12px',
-              }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: `${dir.color}14`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', flexShrink: 0 }}>{dir.icon}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'Inter', fontSize: '13px', fontWeight: 600, color: C.text, marginBottom: '2px' }}>{dir.label}</div>
-                  <div style={{ fontFamily: 'Inter', fontSize: '11px', color: C.muted }}>{dir.desc}</div>
-                </div>
-                <span style={{
-                  fontFamily: 'Inter', fontSize: '9px', fontWeight: 700,
-                  background: `${dir.color}12`, color: dir.color,
-                  border: `1px solid ${dir.color}20`, borderRadius: '5px', padding: '3px 7px',
-                  flexShrink: 0, whiteSpace: 'nowrap',
-                }}>{dir.strength}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Disclaimer */}
-        <div style={{
-          background: 'rgba(99,102,241,0.05)', border: '1px solid rgba(99,102,241,0.15)',
-          borderRadius: '12px', padding: '12px 14px',
-          display: 'flex', alignItems: 'flex-start', gap: '10px',
-        }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={C.indigo} strokeWidth="1.5" style={{ flexShrink: 0, marginTop: '1px' }}>
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-          </svg>
-          <p style={{ fontFamily: 'Inter', fontSize: '11px', color: C.muted, margin: 0, lineHeight: '1.6' }}>
-            Subject guidance is based on your current interests and should also be considered with your academic performance, available school options, and personal goals. These are paths worth exploring — not instructions to follow.
-          </p>
-        </div>
-
-        <button
-          onClick={() => navigate('career-clusters')}
-          style={{
-            width: '100%', height: '50px', borderRadius: '14px',
-            background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-            color: 'white', fontFamily: 'Poppins', fontSize: '14px', fontWeight: 600,
-            border: 'none', cursor: 'pointer',
-            boxShadow: '0 0 20px rgba(99,102,241,0.35)',
-          }}
-        >
-          Explore Career Paths →
-        </button>
-      </div>
-    </div>
+        );
+      })}
+    </Screen>
   );
 }

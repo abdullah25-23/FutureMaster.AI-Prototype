@@ -1,59 +1,60 @@
-export type EducationModule = 'class6_8' | 'class9_10' | 'class11_12' | 'university';
+export type EducationLevel = 'beginner' | 'intermediate' | 'expert';
 
 export type Screen =
-  | 'splash'
-  | 'login'
-  | 'signup'
-  | 'education'
-  | 'profile-setup'
-  | 'class68-dashboard'
-  | 'class910-dashboard'
-  | 'class1112-dashboard'
-  | 'university-dashboard'
-  | 'assessment'
-  | 'interest-profile'
-  | 'career-clusters'
-  | 'career-details'
-  | 'roadmap'
-  | 'videos'
-  | 'profile'
-  | 'notifications'
-  | 'degree-explorer'
-  | 'skills'
-  | 'skill-gap'
-  | 'subject-guidance';
+  | 'splash' | 'login' | 'signup' | 'level' | 'setup' | 'intro'
+  | 'assessment' | 'session-result' | 'interest-profile' | 'dashboard'
+  | 'activities' | 'activity-detail' | 'journey'
+  | 'clusters' | 'career-list' | 'why-career' | 'career-details' | 'readiness'
+  | 'subject-guidance' | 'degree-explorer' | 'roadmap'
+  | 'videos' | 'video-feedback' | 'profile' | 'notifications';
+
+export interface NavParams {
+  clusterId?: string;
+  careerId?: string;
+  activityId?: string;
+  videoId?: string;
+}
 
 export interface StudentProfile {
   name: string;
   email: string;
+  educationLevel: EducationLevel | null;
   currentClass: string;
   age: string;
   schoolName: string;
   studyGroup: string;
   favouriteSubjects: string[];
+  difficultSubjects: string[];
+  subjectMarks: Record<string, string>;
+  overallPercentage: string;
+  futureIdeas: '' | 'yes' | 'unsure' | 'not-yet';
+  futureFields: string[];
   activities: string[];
-  skills: string[];
-  semester: string;
-  university: string;
-  degree: string;
-  technologies: string[];
   careerGoal: string;
 }
 
-export interface InterestDimensions {
-  analyticalThinking: number;
-  technologyInterest: number;
-  creativity: number;
-  helpingPeople: number;
-  leadership: number;
-  communication: number;
-  handsOnWork: number;
-  researchInterest: number;
-  businessInterest: number;
+export type DimensionKey =
+  | 'analyticalThinking' | 'technologyInterest' | 'creativity' | 'helpingPeople'
+  | 'leadership' | 'communication' | 'handsOnWork' | 'researchInterest' | 'businessInterest';
+
+export type InterestDimensions = Record<DimensionKey, number>;
+
+export interface Cluster {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  blurb: string;
+  careerIds: string[];
+  weights: Partial<Record<DimensionKey, number>>;
 }
 
-export interface ExplorationProgress {
-  questionsAnswered: number;
-  profileConfidence: number;
-  interestDimensions: InterestDimensions;
+export type Fit = 'Strong' | 'Good' | 'Emerging';
+export type Readiness = 'On Track' | 'Building' | 'Needs Improvement';
+
+export interface QuestionOption {
+  id: string;
+  label: string;
+  effects: Partial<Record<DimensionKey, number>>;
+  tag?: string;
 }

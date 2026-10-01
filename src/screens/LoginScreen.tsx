@@ -1,151 +1,65 @@
 import { useState } from 'react';
-import { Screen } from '../types';
+import { useApp } from '../state';
+import { Btn, BrandNameTitle, C, Input, Modal } from '../components/ui';
 
-const C = {
-  bg: '#0D1117', card: '#1C1F2E', elevated: '#252A3A',
-  border: '#2D3548', text: '#FFFFFF', sub: '#A0AEC0',
-  muted: '#6B7280', cyan: '#00D2FF', indigo: '#6366F1', violet: '#7C3AED',
-};
+export const GoogleG = () => (
+  <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z" /></svg>
+);
 
-export default function LoginScreen({ navigate }: { navigate: (s: Screen) => void }) {
+export default function LoginScreen() {
+  const { nav, go, logIn, googleLogin } = useApp();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPass, setShowPass] = useState(false);
+  const [show, setShow] = useState(false);
+  const [forgot, setForgot] = useState(false);
+  const [err, setErr] = useState('');
+
+  function submit() {
+    if (!/^\S+@\S+\.\S+$/.test(email)) return setErr('Please enter a valid email address.');
+    if (password.length < 4) return setErr('Please enter your password.');
+    logIn(email); go('level');
+  }
+  const s = (i: number) => ({ '--i': i } as React.CSSProperties);
 
   return (
-    <div className="w-full h-full flex flex-col overflow-hidden" style={{ background: C.bg }}>
-      <div style={{
-        background: 'linear-gradient(160deg, #0D1117 0%, #131827 60%, #1A1E2E 100%)',
-        paddingTop: '56px', paddingBottom: '28px',
-        borderRadius: '0 0 28px 28px',
-        borderBottom: `1px solid ${C.border}`,
-        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px',
-      }}>
-        <div style={{
-          width: '60px', height: '60px', borderRadius: '18px',
-          background: 'linear-gradient(135deg, #4F46E5, #7C3AED)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 0 24px rgba(99,102,241,0.5)',
-        }}>
-          <svg width="28" height="28" viewBox="0 0 52 52" fill="none">
-            <circle cx="26" cy="26" r="20" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"/>
-            <circle cx="26" cy="26" r="3" fill="white"/>
-            <path d="M26 6 L30 20 L26 23 L22 20 Z" fill="rgba(255,255,255,0.95)"/>
-            <path d="M46 26 L32 22 L29 26 L32 30 Z" fill="rgba(255,255,255,0.5)"/>
-            <path d="M26 46 L22 32 L26 29 L30 32 Z" fill="rgba(255,255,255,0.5)"/>
-            <path d="M6 26 L20 30 L23 26 L20 22 Z" fill="rgba(255,255,255,0.5)"/>
-          </svg>
+    <div className="w-full h-full flex flex-col relative" style={{ background: C.bg }}>
+      <div className="flex-1 mobile-scroll" style={{ padding: '64px 24px 36px' }}>
+        <div className="fade-down" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 28 }}>
+          <BrandNameTitle width={240} />
         </div>
-        <h2 style={{ fontFamily: 'Poppins', fontSize: '22px', fontWeight: 700, color: C.text, margin: 0 }}>
-          FutureMaster <span style={{ color: C.cyan, textShadow: '0 0 16px rgba(0,210,255,0.5)' }}>AI</span>
-        </h2>
-        <p style={{ fontFamily: 'Inter', fontSize: '13px', color: C.sub, margin: 0 }}>
-          Welcome back — sign in to continue
+        <div className="stagger" style={s(0)}>
+          <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700 }}>Welcome back</h1>
+          <p style={{ margin: '4px 0 22px', fontSize: 14, color: C.sub }}>Sign in to continue your exploration</p>
+        </div>
+        <div className="stagger" style={s(1)}><label style={lab}>Email</label><Input type="email" value={email} onChange={e => { setEmail(e.target.value); setErr(''); }} placeholder="you@example.com" autoComplete="email" /></div>
+        <div className="stagger" style={{ ...s(2), marginTop: 14, position: 'relative' }}>
+          <label style={lab}>Password</label>
+          <Input type={show ? 'text' : 'password'} value={password} onChange={e => { setPassword(e.target.value); setErr(''); }} placeholder="Your password" autoComplete="current-password" style={{ paddingRight: 56 }} />
+          <button onClick={() => setShow(!show)} style={{ position: 'absolute', right: 6, bottom: 2, height: 44, padding: '0 10px', background: 'none', border: 'none', color: C.cyan, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>{show ? 'Hide' : 'Show'}</button>
+        </div>
+        <div className="stagger" style={{ ...s(3), textAlign: 'right', marginTop: 4 }}>
+          <button onClick={() => setForgot(true)} style={{ background: 'none', border: 'none', color: C.cyan, fontSize: 13, cursor: 'pointer', minHeight: 40 }}>Forgot Password?</button>
+        </div>
+        {err && <p role="alert" style={{ color: C.error, fontSize: 12, margin: '0 0 10px' }}>{err}</p>}
+        <div className="stagger" style={s(4)}><Btn onClick={submit}>Sign In</Btn></div>
+        <div className="stagger flex items-center" style={{ ...s(5), gap: 12, margin: '18px 0' }}>
+          <div style={{ flex: 1, height: 1, background: C.border }} /><span style={{ fontSize: 12, color: C.muted }}>or</span><div style={{ flex: 1, height: 1, background: C.border }} />
+        </div>
+        <div className="stagger" style={s(6)}>
+          <Btn variant="ghost" onClick={() => { googleLogin(); go('level'); }}><span className="flex items-center justify-center" style={{ gap: 10 }}><GoogleG />Continue with Google</span></Btn>
+        </div>
+        <p className="stagger" style={{ ...s(7), textAlign: 'center', fontSize: 14, color: C.sub, marginTop: 22 }}>
+          New here? <button onClick={() => nav('signup')} style={{ background: 'none', border: 'none', color: C.cyan, fontWeight: 600, fontSize: 14, cursor: 'pointer', minHeight: 40 }}>Create Account</button>
         </p>
       </div>
-
-      <div className="flex-1 mobile-scroll px-6 py-5 flex flex-col gap-4">
-        <div>
-          <label style={{ fontFamily: 'Inter', fontSize: '11px', fontWeight: 600, color: C.muted, letterSpacing: '0.8px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>
-            Email Address
-          </label>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            background: C.card, borderRadius: '12px',
-            border: `1.5px solid ${C.border}`,
-            padding: '0 14px', height: '50px',
-          }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
-              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-              <polyline points="22,6 12,13 2,6"/>
-            </svg>
-            <input
-              type="email" value={email} onChange={e => setEmail(e.target.value)}
-              placeholder="student@example.com"
-              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: '14px', color: C.text }}
-            />
-          </div>
-        </div>
-
-        <div>
-          <label style={{ fontFamily: 'Inter', fontSize: '11px', fontWeight: 600, color: C.muted, letterSpacing: '0.8px', display: 'block', marginBottom: '7px', textTransform: 'uppercase' }}>
-            Password
-          </label>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            background: C.card, borderRadius: '12px',
-            border: `1.5px solid ${C.border}`,
-            padding: '0 14px', height: '50px',
-          }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0110 0v4"/>
-            </svg>
-            <input
-              type={showPass ? 'text' : 'password'} value={password}
-              onChange={e => setPassword(e.target.value)}
-              placeholder="••••••••"
-              style={{ flex: 1, border: 'none', outline: 'none', background: 'transparent', fontFamily: 'Inter', fontSize: '14px', color: C.text }}
-            />
-            <button onClick={() => setShowPass(!showPass)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={C.muted} strokeWidth="2">
-                {showPass
-                  ? <><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></>
-                  : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></>
-                }
-              </svg>
-            </button>
-          </div>
-          <div className="flex justify-end mt-2">
-            <button style={{ fontFamily: 'Inter', fontSize: '12px', color: C.cyan, fontWeight: 500, background: 'none', border: 'none', cursor: 'pointer' }}>
-              Forgot Password?
-            </button>
-          </div>
-        </div>
-
-        <button
-          onClick={() => navigate('education')}
-          style={{
-            width: '100%', height: '52px', borderRadius: '14px',
-            background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)',
-            color: 'white', fontFamily: 'Poppins', fontSize: '15px', fontWeight: 600,
-            border: 'none', cursor: 'pointer', marginTop: '4px',
-            boxShadow: '0 0 24px rgba(99,102,241,0.45), 0 4px 16px rgba(0,0,0,0.3)',
-          }}
-        >
-          Sign In
-        </button>
-
-        <div className="flex items-center gap-3">
-          <div style={{ flex: 1, height: '1px', background: C.border }} />
-          <span style={{ fontFamily: 'Inter', fontSize: '12px', color: C.muted }}>or continue with</span>
-          <div style={{ flex: 1, height: '1px', background: C.border }} />
-        </div>
-
-        <button
-          onClick={() => navigate('education')}
-          style={{
-            width: '100%', height: '50px', borderRadius: '14px',
-            background: C.card, border: `1.5px solid ${C.border}`,
-            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px',
-            cursor: 'pointer',
-          }}>
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
-            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
-          </svg>
-          <span style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: 500, color: C.text }}>Continue with Google</span>
-        </button>
-
-        <p style={{ textAlign: 'center', fontFamily: 'Inter', fontSize: '13px', color: C.muted }}>
-          Don't have an account?{' '}
-          <button onClick={() => navigate('signup')} style={{ color: C.cyan, fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer' }}>
-            Create Account
-          </button>
-        </p>
-      </div>
+      {forgot && (
+        <Modal onClose={() => setForgot(false)}>
+          <h3 style={{ margin: 0, fontSize: 17 }}>Reset your password</h3>
+          <p style={{ fontSize: 13, color: C.sub, lineHeight: 1.5, margin: '8px 0 16px' }}>In this prototype no email is sent. In the full app you will receive a reset link at {email || 'your email address'}.</p>
+          <Btn small onClick={() => setForgot(false)}>Got it</Btn>
+        </Modal>
+      )}
     </div>
   );
 }
+export const lab: React.CSSProperties = { display: 'block', fontSize: 13, fontWeight: 500, color: C.sub, marginBottom: 6 };
