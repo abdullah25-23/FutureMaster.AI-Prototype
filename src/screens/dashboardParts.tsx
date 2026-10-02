@@ -12,7 +12,13 @@ export const Section = ({ title, action, onAction, children, i = 0 }: { title: s
 );
 
 export function ReadyBanner() {
-  const { profileReady, nav } = useApp();
+  const { profileReady, nav, currentStageNeedsRefresh } = useApp();
+  if (currentStageNeedsRefresh) return (
+    <Card onClick={() => nav('assessment')} accent={C.cyan} style={{ borderColor: 'rgba(0,210,255,0.4)' }}>
+      <p style={{ margin: 0, fontWeight: 700, fontSize: 14, fontFamily: 'Poppins' }}>Quick exploration update</p>
+      <p style={{ margin: '4px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>Your previous profile has been preserved. Complete a short exploration update so FutureMaster AI can adapt your guidance to your new education stage.</p>
+    </Card>
+  );
   if (!profileReady) return null;
   return (
     <Card onClick={() => nav('clusters')} accent={C.success} style={{ background: 'linear-gradient(135deg,rgba(0,230,118,0.12),rgba(0,210,255,0.08))', borderColor: 'rgba(0,230,118,0.4)' }}>
@@ -143,6 +149,8 @@ export function ProgressCard({ label = 'Profile confidence', note }: { label?: s
   );
 }
 
-export const ChipRow = ({ items, onClick }: { items: string[]; onClick: () => void }) => (
-  <div className="flex flex-wrap" style={{ gap: 8 }}>{items.map(s => <Chip key={s} label={s} onClick={onClick} />)}</div>
+export const ChipRow = ({ items, onClick, nested }: { items: string[]; onClick?: () => void; nested?: boolean }) => (
+  <div className="flex flex-wrap" style={{ gap: 8 }}>{items.map(s => !nested ? <Chip key={s} label={s} onClick={onClick} /> : (
+    <span key={s} style={{ minHeight: 40, display: 'inline-flex', alignItems: 'center', padding: '8px 14px', borderRadius: 12, fontFamily: 'Inter', fontSize: 13, fontWeight: 500, border: `1px solid ${C.border}`, background: C.card, color: C.sub }}>{s}</span>
+  ))}</div>
 );

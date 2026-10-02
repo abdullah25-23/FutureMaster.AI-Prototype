@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useApp } from '../state';
-import { dimensionMeta } from '../data/content';
+import { dimensionMeta, levelMeta } from '../data/content';
 import { Btn, C, Card, Pill, Screen, SectionTitle } from '../components/ui';
 
 function Timeline({ count, done, current }: { count: number; done: number; current: number }) {
@@ -38,8 +38,8 @@ function Timeline({ count, done, current }: { count: number; done: number; curre
 }
 
 export default function JourneyScreen() {
-  const { level, sessionsCompleted, sessionAnswered, profileReady, profileConfidence, questionsAnswered, completedActivities, exploredClusters, videoFeedback, topDims, nav, back } = useApp();
-  const title = level === 'beginner' ? 'My Journey' : 'Progress';
+  const { profile, stageHistory, nextLevel, advanceLevel, level, sessionsCompleted, sessionAnswered, profileReady, profileConfidence, questionsAnswered, completedActivities, exploredClusters, videoFeedback, topDims, nav, back } = useApp();
+  const canProgress = (level === 'beginner' && profile.currentClass === 'Class 8') || (level === 'intermediate' && profile.currentClass === 'Class 10');
   const count = Math.max(3, sessionsCompleted + 1);
   const stats = [
     ['Profile Confidence', `${profileConfidence}%`], ['Questions Answered', questionsAnswered],
@@ -48,7 +48,38 @@ export default function JourneyScreen() {
   ];
 
   return (
-    <Screen title={title} subtitle="Your exploration so far" onBack={back}>
+    <Screen title="My Journey" subtitle="One continuous journey, stage by stage" onBack={back}>
+      <SectionTitle>Educational Guidance Journey</SectionTitle>
+      <Card style={{ marginBottom: 20 }}>
+        {stageHistory.map((s, i) => {
+          const m = levelMeta[s.level];
+          const label = s.status === 'completed' ? 'Completed' : s.status === 'current' ? 'Current' : s.status === 'skipped' ? 'Joined later' : 'Next';
+          const col = s.status === 'completed' ? C.success : s.status === 'current' ? m.accent : C.muted;
+          const last = i === stageHistory.length - 1;
+          return (
+            <div key={s.level} className="flex" style={{ gap: 14 }}>
+              <div className="flex flex-col items-center" style={{ width: 32, flexShrink: 0 }}>
+                <div style={{ width: 32, height: 32, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, border: `2px solid ${col}`,
+                  background: s.status === 'completed' ? C.success : C.card, color: s.status === 'completed' ? '#0D1117' : col, boxShadow: s.status === 'current' ? `0 0 14px ${m.accent}66` : 'none' }}>{s.status === 'completed' ? '✓' : m.icon}</div>
+                {!last && <div style={{ width: 3, flex: 1, minHeight: 30, background: s.status === 'completed' ? C.success : C.border, borderRadius: 2 }} />}
+              </div>
+              <div style={{ flex: 1, paddingBottom: last ? 0 : 16 }}>
+                <p style={{ margin: 0, fontFamily: 'Poppins', fontWeight: 600, fontSize: 14 }}>{m.label} · {m.classes}</p>
+                <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub }}>{m.title}</p>
+                <div style={{ marginTop: 4 }}><Pill text={label} color={col} /></div>
+                {s.status === 'future' && nextLevel === s.level && canProgress && (
+                  <div style={{ marginTop: 8 }}>
+                    <Btn small variant="ghost" onClick={advanceLevel}>Move to {m.label}</Btn>
+                    <p style={{ margin: '4px 0 0', fontSize: 11, color: C.muted }}>Use this when you begin {level === 'beginner' ? 'Class 9' : 'Class 11'}.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </Card>
+
+      <SectionTitle>Exploration Progress</SectionTitle>
       <Card style={{ marginBottom: 16 }}>
         <Timeline count={count} done={sessionsCompleted} current={sessionAnswered} />
       </Card>

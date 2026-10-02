@@ -51,7 +51,7 @@ export const activitiesByLevel: Record<EducationLevel, Activity[]> = {
       s('Your data looks mixed. What do you do?', 'Look for hidden patterns', 'Collect more data', 'Report it honestly and move on'),
     ]),
   ],
-  expert: [
+  advanced: [
     a('e-degree', '🎓', 'Degree Scenario', 'Think through a common education route and how it fits your interests.', 7, [
       s('You are comparing two study routes. What matters most to you?', 'Subjects I enjoy', 'Variety of paths afterwards', 'Practical, hands-on learning', 'Research opportunities'),
       s('How would you gather more information?', 'Talk to people in the field', 'Read course outlines', 'Try a short online course', 'Visit an open day'),

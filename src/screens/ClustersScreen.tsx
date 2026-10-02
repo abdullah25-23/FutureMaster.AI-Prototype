@@ -7,7 +7,7 @@ import { Cluster } from '../types';
 export default function ClustersScreen() {
   const { level, profileReady, dims, loadNav, nav, exploreCluster, exploredClusters } = useApp();
   const [all, setAll] = useState(false);
-  const title = level === 'expert' ? 'Career Paths' : 'Explore Careers';
+  const title = level === 'advanced' ? 'Career Paths' : 'Explore Careers';
 
   const open = (c: Cluster) => { exploreCluster(c.id); loadNav('Finding career areas worth exploring...', 'career-list', { clusterId: c.id }); };
   const ranked = profileReady ? [...clusters].sort((a, b) => clusterFit(b, dims) - clusterFit(a, dims)) : clusters;

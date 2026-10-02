@@ -18,7 +18,7 @@ export default function AssessmentScreen() {
       const real = opt.id === 'unsure' ? null : opt;
       answerQuestion(q, real);
       if (sessionAnswered + 1 >= SESSION_LENGTH) {
-        finishSession(real ? 6 : 1);
+        finishSession();
         loadNav('Updating your interest profile...', 'session-result');
       }
       setPicked(null);

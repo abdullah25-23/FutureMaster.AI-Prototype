@@ -1,11 +1,11 @@
 import { useApp } from '../state';
 import DashboardShell, { FactCard } from '../components/DashboardShell';
 import { Card, Bar, Pill, C } from '../components/ui';
-import { beginnerActivities } from '../data/content';
+import { activitiesByLevel } from '../data/activities';
 import { degrees, profileReadiness } from '../data/careers';
 import { Section, ReadyBanner, HeroCard, useSessionHero, InterestBars, ClusterPreview, ActivitiesPreview, VideoCard, ChipRow } from './dashboardParts';
 
-export default function ExpertDashboard() {
+export default function AdvancedDashboard() {
   const { nav, profile, profileReady, sessionsCompleted, profileConfidence, questionsAnswered } = useApp();
   const eyebrow = useSessionHero();
   const readiness = profileReadiness(profile);
@@ -34,7 +34,7 @@ export default function ExpertDashboard() {
           </p>
         </Card>
       </Section>
-      <Section i={6} title="Activities" action="See all" onAction={() => nav('activities')}><ActivitiesPreview items={beginnerActivities.slice(0, 4)} /></Section>
+      <Section i={6} title="Activities" action="See all" onAction={() => nav('activities')}><ActivitiesPreview items={activitiesByLevel['advanced'].slice(0, 3).map(a => ({ icon: a.icon, label: a.title }))} /></Section>
       <Section i={7} title="Education Roadmap" action="Open" onAction={() => nav('roadmap')}>
         <Card onClick={() => nav('roadmap')}><p style={{ margin: 0, fontSize: 13, color: C.sub, lineHeight: 1.5 }}>Common education routes from your current study group, with possible next steps to consider.</p></Card>
       </Section>

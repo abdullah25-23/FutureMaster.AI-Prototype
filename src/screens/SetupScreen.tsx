@@ -1,6 +1,6 @@
 import { useApp } from '../state';
 import { Btn, C, Chip, Input, Label, Screen } from '../components/ui';
-import { beginnerActivities, beginnerSubjects, expertGroups, expertGroupSubjects, futureFieldOptions, intermediateGroups, intermediateMarkSubjects, intermediateSubjects, levelMeta } from '../data/content';
+import { beginnerActivities, beginnerSubjects, advancedGroups, advancedGroupSubjects, futureFieldOptions, intermediateGroups, intermediateMarkSubjects, intermediateSubjects, levelMeta } from '../data/content';
 
 function Multi({ options, value, onChange }: { options: Array<string | { label: string; icon?: string }>; value: string[]; onChange: (v: string[]) => void }) {
   return (
@@ -19,7 +19,7 @@ const Block = ({ children }: { children: React.ReactNode }) => <div style={{ mar
 const Hint = ({ children }: { children: React.ReactNode }) => <p style={{ margin: '-4px 0 8px', fontSize: 12, color: C.muted }}>{children}</p>;
 
 export default function SetupScreen() {
-  const { level, profile, updateProfile, nav } = useApp();
+  const { level, profile, updateProfile, nav, go, transitionFrom } = useApp();
   if (!level) return null;
   const m = levelMeta[level];
   const p = profile;
@@ -34,16 +34,16 @@ export default function SetupScreen() {
     </div>
   );
   const group = p.studyGroup;
-  const markSubs = level === 'expert'
-    ? expertGroupSubjects[group] ?? []
+  const markSubs = level === 'advanced'
+    ? advancedGroupSubjects[group] ?? []
     : intermediateMarkSubjects.filter(s => s !== 'Biology' && s !== 'Computer Science' || (s === 'Biology' && group === 'Science with Biology') || (s === 'Computer Science' && group === 'Science with Computer Science'));
   const valid = !!p.currentClass && (level === 'beginner' || !!p.studyGroup) && (!p.age || +p.age > 4);
 
   return (
     <Screen title={`${m.label} Profile`} subtitle={`${m.classes} · a few quick questions`}
-      footer={<Btn disabled={!valid} onClick={() => nav('intro')}>Continue</Btn>}>
+      footer={<Btn disabled={!valid} onClick={() => (transitionFrom ? go('dashboard') : nav('intro'))}>Continue</Btn>}>
       <Block>
-        <Label>{level === 'expert' ? 'Which year are you in?' : 'Current Class'}</Label>
+        <Label>{level === 'advanced' ? 'Which year are you in?' : 'Current Class'}</Label>
         <Single options={m.classList} value={p.currentClass} onChange={v => updateProfile({ currentClass: v })} />
       </Block>
       <Block>
@@ -58,20 +58,20 @@ export default function SetupScreen() {
       {level !== 'beginner' && (
         <Block>
           <Label>Study Group</Label>
-          <Single options={level === 'intermediate' ? intermediateGroups : expertGroups} value={p.studyGroup} onChange={v => updateProfile({ studyGroup: v, subjectMarks: {} })} />
+          <Single options={level === 'intermediate' ? intermediateGroups : advancedGroups} value={p.studyGroup} onChange={v => updateProfile({ studyGroup: v, subjectMarks: {} })} />
         </Block>
       )}
 
       <Block>
         <Label>Favourite Subjects</Label>
-        <Multi options={level === 'beginner' ? beginnerSubjects : level === 'intermediate' ? intermediateSubjects : (expertGroupSubjects[group] ?? ['Mathematics', 'English', 'Computer Science', 'Physics', 'Biology'])} value={p.favouriteSubjects} onChange={v => updateProfile({ favouriteSubjects: v })} />
+        <Multi options={level === 'beginner' ? beginnerSubjects : level === 'intermediate' ? intermediateSubjects : (advancedGroupSubjects[group] ?? ['Mathematics', 'English', 'Computer Science', 'Physics', 'Biology'])} value={p.favouriteSubjects} onChange={v => updateProfile({ favouriteSubjects: v })} />
       </Block>
 
       {level !== 'beginner' && (
         <Block>
           <Label>Subjects you find difficult</Label>
           <Hint>This helps guide, never limit, your options.</Hint>
-          <Multi options={level === 'intermediate' ? intermediateSubjects : (expertGroupSubjects[group] ?? ['Mathematics', 'English', 'Computer Science', 'Physics', 'Biology'])} value={p.difficultSubjects} onChange={v => updateProfile({ difficultSubjects: v })} />
+          <Multi options={level === 'intermediate' ? intermediateSubjects : (advancedGroupSubjects[group] ?? ['Mathematics', 'English', 'Computer Science', 'Physics', 'Biology'])} value={p.difficultSubjects} onChange={v => updateProfile({ difficultSubjects: v })} />
         </Block>
       )}
 
@@ -108,7 +108,7 @@ export default function SetupScreen() {
         </Block>
       )}
 
-      {level === 'expert' && (
+      {level === 'advanced' && (
         <Block>
           <Label>Which fields or degrees are you already considering? (optional)</Label>
           <Multi options={futureFieldOptions} value={p.futureFields} onChange={v => updateProfile({ futureFields: v })} />

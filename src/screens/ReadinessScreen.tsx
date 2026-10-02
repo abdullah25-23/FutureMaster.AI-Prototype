@@ -33,9 +33,9 @@ export default function ReadinessScreen() {
   let academicLine: string;
   if (lv === 'beginner') academicLine = `At this stage guidance is general. ${key} may be useful to strengthen as you progress, and there is plenty of time to build.`;
   else if (!marks) academicLine = 'Guidance is general until more academic information is available.';
-  else if (r.readiness === 'On Track') academicLine = lv === 'expert' ? 'Your current academic performance suggests you are in a good position to review the degree routes for this career.' : 'Your current academic performance looks well aligned with an early study path in this area.';
+  else if (r.readiness === 'On Track') academicLine = lv === 'advanced' ? 'Your current academic performance suggests you are in a good position to review the degree routes for this career.' : 'Your current academic performance looks well aligned with an early study path in this area.';
   else if (r.readiness === 'Building') academicLine = `Your current academic performance suggests you are building toward this path. Extra attention to ${key} could help.`;
-  else academicLine = lv === 'expert' ? 'Your current academic performance suggests that some pathways in this area may require additional preparation.' : `Your current academic performance suggests that more practice in ${key} could open more options later.`;
+  else academicLine = lv === 'advanced' ? 'Your current academic performance suggests that some pathways in this area may require additional preparation.' : `Your current academic performance suggests that more practice in ${key} could open more options later.`;
 
   const gap = lv === 'beginner' ? 'No marks are used at this stage. Enjoy exploring and building your basics.'
     : !marks ? 'A clearer gap can be shown once academic information is available.'
@@ -74,7 +74,7 @@ export default function ReadinessScreen() {
         <SectionTitle>Possible Improvements</SectionTitle>
         <Card>
           {steps.map(s => <p key={s} style={{ margin: '0 0 8px', fontSize: 13, lineHeight: 1.5 }}><span style={{ color: C.cyan }}>→ </span>{s}</p>)}
-          {lv === 'expert' && <p style={{ margin: 0, fontSize: 11, color: C.muted }}>Entry requirements and assessments change, so check the latest information from each institution.</p>}
+          {lv === 'advanced' && <p style={{ margin: 0, fontSize: 11, color: C.muted }}>Entry requirements and assessments change, so check the latest information from each institution.</p>}
         </Card>
       </div>
 
@@ -84,6 +84,11 @@ export default function ReadinessScreen() {
         <p style={{ margin: '10px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>These are paths worth exploring alongside {career.name.toLowerCase()}.</p>
         <button className="pressable" onClick={() => nav('clusters')} style={{ marginTop: 6, background: 'none', border: 'none', color: C.cyan, fontWeight: 600, fontSize: 12, cursor: 'pointer', minHeight: 36, padding: 0 }}>Browse more career areas →</button>
       </div>
+
+      <p style={{ margin: '18px 4px 0', fontSize: 11, color: C.muted, lineHeight: 1.55 }}>
+        Academic Readiness is a general preparation indicator based on the information you provide. It does not determine admission eligibility.
+        {lv === 'advanced' && ' Admission requirements vary by institution and may change over time.'}
+      </p>
     </Screen>
   );
 }

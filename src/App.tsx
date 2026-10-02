@@ -28,6 +28,7 @@ import VideosScreen from './screens/VideosScreen';
 import VideoFeedbackScreen from './screens/VideoFeedbackScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import NotificationsScreen from './screens/NotificationsScreen';
+import StageTransitionScreen from './screens/StageTransitionScreen';
 
 const screens: Record<Screen, ComponentType> = {
   splash: SplashScreen, login: LoginScreen, signup: SignupScreen, level: LevelScreen, setup: SetupScreen, intro: IntroScreen,
@@ -35,7 +36,7 @@ const screens: Record<Screen, ComponentType> = {
   activities: ActivitiesScreen, 'activity-detail': ActivityDetailScreen, journey: JourneyScreen,
   clusters: ClustersScreen, 'career-list': CareerListScreen, 'why-career': WhyCareerScreen, 'career-details': CareerDetailsScreen,
   readiness: ReadinessScreen, 'subject-guidance': SubjectGuidanceScreen, 'degree-explorer': DegreeExplorerScreen, roadmap: RoadmapScreen,
-  videos: VideosScreen, 'video-feedback': VideoFeedbackScreen, profile: ProfileScreen, notifications: NotificationsScreen,
+  videos: VideosScreen, 'video-feedback': VideoFeedbackScreen, profile: ProfileScreen, notifications: NotificationsScreen, 'stage-transition': StageTransitionScreen,
 };
 
 function Router() {

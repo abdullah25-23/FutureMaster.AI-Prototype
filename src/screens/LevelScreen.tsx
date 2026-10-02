@@ -4,7 +4,7 @@ import { Btn, BrandSymbol, C, Card, Screen } from '../components/ui';
 import { levelMeta } from '../data/content';
 import { EducationLevel } from '../types';
 
-const order: EducationLevel[] = ['beginner', 'intermediate', 'expert'];
+const order: EducationLevel[] = ['beginner', 'intermediate', 'advanced'];
 
 export default function LevelScreen() {
   const { setLevel, nav } = useApp();
@@ -13,8 +13,8 @@ export default function LevelScreen() {
     <Screen footer={<Btn disabled={!sel} onClick={() => { setLevel(sel!); nav('setup'); }}>Continue</Btn>}>
       <div style={{ paddingTop: 44 }}>
         <div className="fade-down" style={{ display: 'flex', justifyContent: 'center', marginBottom: 18 }}><BrandSymbol height={52} /></div>
-        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, textAlign: 'center' }}>Choose Your Level</h1>
-        <p style={{ margin: '8px 8px 22px', fontSize: 14, color: C.sub, textAlign: 'center', lineHeight: 1.5 }}>FutureMaster AI adapts your exploration based on your current education stage.</p>
+        <h1 style={{ margin: 0, fontSize: 26, fontWeight: 700, textAlign: 'center' }}>Select Your Current Education Stage</h1>
+        <p style={{ margin: '8px 8px 22px', fontSize: 14, color: C.sub, textAlign: 'center', lineHeight: 1.5 }}>Select the stage that matches your current class. FutureMaster AI will personalize your exploration and guidance accordingly.</p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {order.map((l, i) => {
             const m = levelMeta[l]; const on = sel === l;
@@ -26,6 +26,7 @@ export default function LevelScreen() {
                     <div style={{ flex: 1 }}>
                       <p style={{ margin: 0, fontFamily: 'Poppins', fontWeight: 700, fontSize: 17, textTransform: 'uppercase', letterSpacing: 0.5 }}>{m.label}</p>
                       <p style={{ margin: '1px 0 0', fontSize: 13, fontWeight: 600, color: m.accent }}>{m.classes}</p>
+                      <p style={{ margin: '1px 0 0', fontSize: 12, fontWeight: 600, color: C.text }}>{m.title}</p>
                     </div>
                     <div style={{ width: 24, height: 24, borderRadius: '50%', border: `2px solid ${on ? m.accent : C.border}`, background: on ? m.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D1117', fontSize: 13, fontWeight: 800, transition: 'all .2s' }}>{on && '✓'}</div>
                   </div>

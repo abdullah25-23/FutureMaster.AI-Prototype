@@ -41,7 +41,7 @@ export default function SubjectGuidanceScreen() {
   const top2 = topDims.slice(0, 2).map(t => dimensionMeta[t.key].label.toLowerCase()).join(' and ');
 
   return (
-    <Screen title="Subject Guidance">
+    <Screen title="Subject & Pathway Guidance">
       <p style={{ margin: '0 0 16px', fontSize: 13, color: C.sub, lineHeight: 1.5 }}>
         {profileReady ? `Your strongest interests so far are ${top2}. ` : `Early signals point toward ${top2}. `}
         {profile.studyGroup && `You are exploring ${profile.studyGroup}. `}These are ideas to explore, not decisions.

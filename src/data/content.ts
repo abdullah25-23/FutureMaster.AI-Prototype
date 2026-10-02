@@ -1,14 +1,14 @@
 import { DimensionKey, EducationLevel, Screen } from '../types';
 
 export const levelMeta: Record<EducationLevel, {
-  label: string; classes: string; icon: string; desc: string; accent: string; classList: string[];
+  label: string; classes: string; title: string; icon: string; desc: string; accent: string; classList: string[];
 }> = {
-  beginner: { label: 'Beginner', classes: 'Class 6-8', icon: '🌱', accent: '#00E676', classList: ['Class 6', 'Class 7', 'Class 8'],
-    desc: 'Discover your interests through simple activities, scenarios and career exploration.' },
-  intermediate: { label: 'Intermediate', classes: 'Class 9-10', icon: '📚', accent: '#00D2FF', classList: ['Class 9', 'Class 10'],
-    desc: 'Understand your interests, subjects and possible future study directions.' },
-  expert: { label: 'Expert', classes: 'Class 11-12', icon: '🎓', accent: '#A78BFA', classList: ['Class 11 / 1st Year', 'Class 12 / 2nd Year'],
-    desc: 'Explore career areas, degree pathways and your academic readiness.' },
+  beginner: { label: 'Beginner', classes: 'Class 6-8', title: 'Interest Discovery', icon: '🌱', accent: '#00E676', classList: ['Class 6', 'Class 7', 'Class 8'],
+    desc: 'Discover what interests you through simple activities, scenarios and exploration.' },
+  intermediate: { label: 'Intermediate', classes: 'Class 9-10', title: 'Subject & Pathway Guidance', icon: '📚', accent: '#00D2FF', classList: ['Class 9', 'Class 10'],
+    desc: 'Connect your interests with subjects and possible future study pathways.' },
+  advanced: { label: 'Advanced', classes: 'Class 11-12', title: 'Degree & Career Decision Support', icon: '🎓', accent: '#A78BFA', classList: ['Class 11 / 1st Year', 'Class 12 / 2nd Year'],
+    desc: 'Explore career areas, degree pathways and your academic readiness before making important next-step decisions.' },
 };
 
 export const dimensionMeta: Record<DimensionKey, { label: string; color: string }> = {
@@ -33,8 +33,8 @@ export const beginnerActivities = [
 export const intermediateGroups = ['Science with Biology', 'Science with Computer Science', 'Arts / Humanities', 'Other'];
 export const intermediateSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science', 'English', 'Urdu', 'Islamiyat', 'Pakistan Studies', 'Arts / Humanities'];
 export const intermediateMarkSubjects = ['Mathematics', 'Physics', 'Chemistry', 'Biology', 'Computer Science'];
-export const expertGroups = ['FSc Pre-Medical', 'FSc Pre-Engineering', 'ICS', 'I.Com / Commerce', 'FA / Arts / Humanities', 'Other'];
-export const expertGroupSubjects: Record<string, string[]> = {
+export const advancedGroups = ['FSc Pre-Medical', 'FSc Pre-Engineering', 'ICS', 'I.Com / Commerce', 'FA / Arts / Humanities', 'Other'];
+export const advancedGroupSubjects: Record<string, string[]> = {
   'FSc Pre-Medical': ['Biology', 'Chemistry', 'Physics'],
   'FSc Pre-Engineering': ['Mathematics', 'Physics', 'Chemistry'],
   'ICS': ['Mathematics', 'Computer Science', 'Physics / Statistics'],
@@ -55,7 +55,7 @@ export const careerFacts: Record<EducationLevel, string[]> = {
     'Healthcare includes many careers beyond becoming a doctor.',
     'Data scientists often work with ideas from statistics, computing and the subject they study.',
   ],
-  expert: [
+  advanced: [
     'Computer Science can lead to software development, cybersecurity, AI and data careers.',
     'Psychology can lead to careers in mental health, research, education and organizations.',
     'Many engineering fields overlap with computing, design and management.',
@@ -86,21 +86,21 @@ export const drawerItems: Record<EducationLevel, Array<{ label: string; icon: st
   intermediate: [
     { label: 'Home', icon: '🏠', screen: 'dashboard' },
     { label: 'My Interests', icon: '✨', screen: 'interest-profile' },
-    { label: 'Subject Guidance', icon: '📚', screen: 'subject-guidance' },
+    { label: 'Subject & Pathway Guidance', icon: '📚', screen: 'subject-guidance' },
     { label: 'Activities', icon: '🧩', screen: 'activities' },
     { label: 'Explore Careers', icon: '🔭', screen: 'clusters' },
     { label: 'Career Videos', icon: '🎬', screen: 'videos' },
-    { label: 'Progress', icon: '📊', screen: 'journey' },
+    { label: 'My Journey', icon: '📊', screen: 'journey' },
     { label: 'Profile', icon: '👤', screen: 'profile' },
   ],
-  expert: [
+  advanced: [
     { label: 'Home', icon: '🏠', screen: 'dashboard' },
     { label: 'My Interests', icon: '✨', screen: 'interest-profile' },
     { label: 'Degree Explorer', icon: '🎓', screen: 'degree-explorer' },
     { label: 'Career Paths', icon: '🔭', screen: 'clusters' },
     { label: 'Activities', icon: '🧩', screen: 'activities' },
     { label: 'Roadmap', icon: '🗺️', screen: 'roadmap' },
-    { label: 'Progress', icon: '📊', screen: 'journey' },
+    { label: 'My Journey', icon: '📊', screen: 'journey' },
     { label: 'Profile', icon: '👤', screen: 'profile' },
   ],
 };

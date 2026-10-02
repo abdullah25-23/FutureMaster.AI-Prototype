@@ -1,11 +1,11 @@
 import { useApp } from '../state';
 import BeginnerDashboard from './BeginnerDashboard';
 import IntermediateDashboard from './IntermediateDashboard';
-import ExpertDashboard from './ExpertDashboard';
+import AdvancedDashboard from './AdvancedDashboard';
 
 export default function DashboardScreen() {
   const { level } = useApp();
-  if (level === 'expert') return <ExpertDashboard />;
+  if (level === 'advanced') return <AdvancedDashboard />;
   if (level === 'intermediate') return <IntermediateDashboard />;
   return <BeginnerDashboard />;
 }

@@ -30,10 +30,10 @@ export default function RoadmapScreen() {
   const r = readinessFor(career, profile, lv);
 
   const route = routes[career.pathwayType];
-  const start: Step = lv === 'expert'
+  const start: Step = lv === 'advanced'
     ? [`${classLabel || 'Class 11-12'} (you are here)`, 'Your current intermediate stage', 'c']
     : [`${classLabel || (lv === 'beginner' ? 'Class 6-8' : 'Class 9-10')} (you are here)`, lv === 'beginner' ? 'Explore subjects and interests' : 'Strengthen your subjects and explore groups', 'c'];
-  const steps: Step[] = lv === 'expert' ? [start, ...route.slice(2)] : [start, ...route];
+  const steps: Step[] = lv === 'advanced' ? [start, ...route.slice(2)] : [start, ...route];
 
   return (
     <Screen title="Roadmap" subtitle={career.name}>

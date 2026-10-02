@@ -1,4 +1,4 @@
-export type EducationLevel = 'beginner' | 'intermediate' | 'expert';
+export type EducationLevel = 'beginner' | 'intermediate' | 'advanced';
 
 export type Screen =
   | 'splash' | 'login' | 'signup' | 'level' | 'setup' | 'intro'
@@ -6,7 +6,7 @@ export type Screen =
   | 'activities' | 'activity-detail' | 'journey'
   | 'clusters' | 'career-list' | 'why-career' | 'career-details' | 'readiness'
   | 'subject-guidance' | 'degree-explorer' | 'roadmap'
-  | 'videos' | 'video-feedback' | 'profile' | 'notifications';
+  | 'videos' | 'video-feedback' | 'profile' | 'notifications' | 'stage-transition';
 
 export interface NavParams {
   clusterId?: string;

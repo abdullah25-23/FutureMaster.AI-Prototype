@@ -1,7 +1,7 @@
 import { useApp } from '../state';
 import DashboardShell, { FactCard } from '../components/DashboardShell';
 import { Card, C } from '../components/ui';
-import { beginnerActivities } from '../data/content';
+import { activitiesByLevel } from '../data/activities';
 import { Section, ReadyBanner, HeroCard, useSessionHero, InterestBars, ClusterPreview, ActivitiesPreview, VideoCard, ProgressCard, ChipRow } from './dashboardParts';
 
 const dimSubjects: Record<string, string[]> = {
@@ -22,17 +22,17 @@ export default function IntermediateDashboard() {
       <ReadyBanner />
       <HeroCard eyebrow={eyebrow} title="Continue Exploration" text="Each session sharpens your interest profile and the guidance built on it." cta="Continue Exploration" />
       <Section i={1} title="Strongest Interests" action="See all" onAction={() => nav('interest-profile')}><InterestBars max={4} /></Section>
-      <Section i={2} title="Subject Guidance" action="Open" onAction={() => nav('subject-guidance')}>
+      <Section i={2} title="Subject & Pathway Guidance" action="Open" onAction={() => nav('subject-guidance')}>
         <Card onClick={() => nav('subject-guidance')}>
           <p style={{ margin: 0, fontSize: 13, color: C.sub, lineHeight: 1.5 }}>{profile.studyGroup ? `Study group: ${profile.studyGroup}. ` : ''}See which subjects connect with your interests and what to consider next.</p>
           {subjects.length > 0 && <>
             <p style={{ margin: '12px 0 8px', fontSize: 12, fontWeight: 600 }}>Subjects Worth Exploring</p>
-            <ChipRow items={subjects} onClick={() => nav('subject-guidance')} />
+            <ChipRow items={subjects} nested />
           </>}
         </Card>
       </Section>
       <Section i={3} title="Career Areas" action="See all" onAction={() => nav('clusters')}><ClusterPreview n={3} withFit /></Section>
-      <Section i={4} title="Activities" action="See all" onAction={() => nav('activities')}><ActivitiesPreview items={beginnerActivities.slice(0, 4)} /></Section>
+      <Section i={4} title="Activities" action="See all" onAction={() => nav('activities')}><ActivitiesPreview items={activitiesByLevel['intermediate'].slice(0, 3).map(a => ({ icon: a.icon, label: a.title }))} /></Section>
       <Section i={5} title="Career Videos" action="More" onAction={() => nav('videos')}><VideoCard title="Careers connected to your interests" text="Short videos selected from your profile." /></Section>
       <FactCard />
       <Section i={6} title="Progress" action="Open" onAction={() => nav('journey')}><ProgressCard /></Section>

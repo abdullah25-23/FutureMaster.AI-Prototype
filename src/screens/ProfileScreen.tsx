@@ -32,9 +32,14 @@ export default function ProfileScreen() {
         </Card>
 
         <Card>
-          <Row label="Level" value={meta ? `${meta.label} (${classLabel || meta.classes})` : '-'} />
+          <Row label="Current Guidance Level" value={meta ? meta.label : '-'} />
+          <Row label="Class" value={classLabel || meta?.classes || '-'} />
           <Row label="School" value={profile.schoolName || 'Not added'} />
           {profile.studyGroup && <Row label="Study Group" value={profile.studyGroup} />}
+        </Card>
+
+        <Card onClick={() => nav('journey')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 14, fontWeight: 600 }}>🗺️ My Journey</span><span style={{ color: C.cyan }}>→</span>
         </Card>
 
         <Sec title="Favourite Subjects">
