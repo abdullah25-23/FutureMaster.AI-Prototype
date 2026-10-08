@@ -1,6 +1,8 @@
+import { Ico } from '../components/Icon';
 import { useEffect, useState } from 'react';
 import { useApp } from '../state';
 import { dimensionMeta, levelMeta } from '../data/content';
+import { videoById } from '../data/videos';
 import { Btn, C, Card, Pill, Screen, SectionTitle } from '../components/ui';
 
 function Timeline({ count, done, current }: { count: number; done: number; current: number }) {
@@ -18,7 +20,7 @@ function Timeline({ count, done, current }: { count: number; done: number; curre
           <div key={i} className="flex stagger" style={{ gap: 14, '--i': i } as React.CSSProperties}>
             <div className="flex flex-col items-center" style={{ width: 32, flexShrink: 0 }}>
               <div style={{ width: 32, height: 32, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700,
-                background: isDone ? C.success : C.card, color: isDone ? '#0D1117' : col, border: `2px solid ${col}`, boxShadow: isCur ? `0 0 14px ${C.cyan}66` : 'none' }}>{isDone ? '✓' : i}</div>
+                background: isDone ? C.success : C.card, color: isDone ? C.onAccent : col, border: `2px solid ${col}`, boxShadow: isCur ? `0 0 14px ${C.cyan}66` : 'none' }}>{isDone ? '✓' : i}</div>
               {!lastItem && (
                 <div style={{ width: 3, flex: 1, minHeight: 36, background: C.border, borderRadius: 2, overflow: 'hidden' }}>
                   <div style={{ width: '100%', height: lineFilled ? '100%' : '0%', background: C.success, transition: `height .8s ease ${i * 0.15}s` }} />
@@ -44,8 +46,11 @@ export default function JourneyScreen() {
   const stats = [
     ['Profile Confidence', `${profileConfidence}%`], ['Questions Answered', questionsAnswered],
     ['Activities Completed', completedActivities.length], ['Career Areas Explored', exploredClusters.length],
-    ['Videos Interacted With', Object.keys(videoFeedback).length],
   ];
+  const rated = Object.keys(videoFeedback).map(videoById).filter((x): x is NonNullable<typeof x> => !!x);
+  const topKeys = topDims.slice(0, 3).map(d => d.key);
+  const newAreas = new Set(rated.filter(x => !topKeys.includes(x.dim)).map(x => x.area)).size;
+  const videoStats = [['Career Videos Explored', rated.length], ['Very Interested', Object.values(videoFeedback).filter(r => r === 5).length], ['New Areas Explored', newAreas]];
 
   return (
     <Screen title="My Journey" subtitle="One continuous journey, stage by stage" onBack={back}>
@@ -60,7 +65,7 @@ export default function JourneyScreen() {
             <div key={s.level} className="flex" style={{ gap: 14 }}>
               <div className="flex flex-col items-center" style={{ width: 32, flexShrink: 0 }}>
                 <div style={{ width: 32, height: 32, borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 700, border: `2px solid ${col}`,
-                  background: s.status === 'completed' ? C.success : C.card, color: s.status === 'completed' ? '#0D1117' : col, boxShadow: s.status === 'current' ? `0 0 14px ${m.accent}66` : 'none' }}>{s.status === 'completed' ? '✓' : m.icon}</div>
+                  background: s.status === 'completed' ? C.success : C.card, color: s.status === 'completed' ? C.onAccent : col, boxShadow: s.status === 'current' ? `0 0 14px ${m.accent}66` : 'none' }}>{s.status === 'completed' ? '✓' : <Ico e={m.icon} size={18} />}</div>
                 {!last && <div style={{ width: 3, flex: 1, minHeight: 30, background: s.status === 'completed' ? C.success : C.border, borderRadius: 2 }} />}
               </div>
               <div style={{ flex: 1, paddingBottom: last ? 0 : 16 }}>
@@ -100,6 +105,16 @@ export default function JourneyScreen() {
           <Card key={label} style={{ padding: 14, gridColumn: i === 4 ? 'span 2' : undefined }}>
             <p style={{ margin: 0, fontFamily: 'Poppins', fontWeight: 700, fontSize: 22 }}>{v}</p>
             <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub }}>{label}</p>
+          </Card>
+        ))}
+      </div>
+
+      <SectionTitle>Career Videos</SectionTitle>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 16 }}>
+        {videoStats.map(([label, v]) => (
+          <Card key={label} style={{ padding: 12 }}>
+            <p style={{ margin: 0, fontFamily: 'Poppins', fontWeight: 700, fontSize: 20 }}>{v}</p>
+            <p style={{ margin: '2px 0 0', fontSize: 11, color: C.sub, lineHeight: 1.3 }}>{label}</p>
           </Card>
         ))}
       </div>

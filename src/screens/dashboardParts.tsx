@@ -1,5 +1,7 @@
+import { Ico } from '../components/Icon';
 import { ReactNode } from 'react';
 import { useApp } from '../state';
+import { videosForLevel } from '../data/videos';
 import { C, Card, Bar, SectionTitle, Pill, LockedBox, Chip } from '../components/ui';
 import { dimensionMeta } from '../data/content';
 import { clusters, clusterFit } from '../data/careers';
@@ -23,7 +25,7 @@ export function ReadyBanner() {
   return (
     <Card onClick={() => nav('clusters')} accent={C.success} style={{ background: 'linear-gradient(135deg,rgba(0,230,118,0.12),rgba(0,210,255,0.08))', borderColor: 'rgba(0,230,118,0.4)' }}>
       <div className="flex items-center" style={{ gap: 12 }}>
-        <span style={{ fontSize: 22 }}>✅</span>
+        <Ico e="CheckCircle2" size={24} color={C.success} />
         <div style={{ flex: 1 }}>
           <p style={{ margin: 0, fontWeight: 700, fontSize: 14, fontFamily: 'Poppins' }}>Your profile is ready</p>
           <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub }}>See career areas worth exploring</p>
@@ -84,7 +86,7 @@ export function ClusterPreview({ n = 3, withFit }: { n?: number; withFit?: boole
         {list.map((c, idx) => (
           <Card key={c.id} onClick={() => nav('clusters')} style={{ padding: 12 }}>
             <div className="flex items-center stagger" style={{ gap: 12, ['--i' as string]: idx }}>
-              <div style={{ width: 42, height: 42, borderRadius: 12, background: `${c.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{c.icon}</div>
+              <div style={{ width: 42, height: 42, borderRadius: 12, background: `${c.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c.color }}><Ico e={c.icon} size={20} /></div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{c.name}</p>
                 <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.blurb}</p>
@@ -105,7 +107,7 @@ export function ActivitiesPreview({ items }: { items: Array<{ icon: string; labe
     <div className="mobile-scroll-x" style={{ display: 'flex', gap: 10, overflowX: 'auto', paddingBottom: 4 }}>
       {items.map(a => (
         <Card key={a.label} onClick={() => nav('activities')} style={{ width: 128, flexShrink: 0, padding: 12 }}>
-          <div style={{ fontSize: 24 }}>{a.icon}</div>
+          <div style={{ color: C.cyan }}><Ico e={a.icon} size={24} /></div>
           <p style={{ margin: '8px 0 0', fontSize: 13, fontWeight: 600, lineHeight: 1.3 }}>{a.label}</p>
         </Card>
       ))}
@@ -117,17 +119,18 @@ export function ActivitiesPreview({ items }: { items: Array<{ icon: string; labe
   );
 }
 
-export function VideoCard({ title, text }: { title: string; text: string }) {
-  const { nav } = useApp();
+export function VideoCard(_: { title?: string; text?: string }) {
+  const { nav, level, dims } = useApp();
+  const pick = videosForLevel(level, dims).interests[0];
+  if (!pick) return null;
   return (
-    <Card onClick={() => nav('videos')}>
+    <Card onClick={() => nav('videos', { videoId: pick.id })}>
+      <p style={{ margin: '0 0 8px', fontSize: 11, fontWeight: 700, letterSpacing: 0.8, color: C.muted }}>RECOMMENDED CAREER VIDEO</p>
       <div className="flex items-center" style={{ gap: 12 }}>
-        <div style={{ width: 64, height: 48, borderRadius: 12, background: 'linear-gradient(135deg,#00D2FF,#6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z" /></svg>
-        </div>
+        <div style={{ width: 64, height: 48, borderRadius: 12, background: 'linear-gradient(135deg,#00D2FF,#6366F1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: "#fff" }}><Ico e={pick.thumb} size={22} /></div>
         <div style={{ flex: 1 }}>
-          <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{title}</p>
-          <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.4 }}>{text}</p>
+          <p style={{ margin: 0, fontSize: 14, fontWeight: 600, lineHeight: 1.35 }}>{pick.title}</p>
+          <p style={{ margin: '4px 0 0', fontSize: 12, color: C.cyan, fontWeight: 600 }}><Ico e="Play" size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />Watch / Explore</p>
         </div>
       </div>
     </Card>

@@ -1,3 +1,4 @@
+import { Ico } from './Icon';
 import { CSSProperties, ReactNode, useEffect, useState } from 'react';
 import { useApp } from '../state';
 import logoFull from '../imports/App_logo_Full-removebg-preview.png';
@@ -5,10 +6,11 @@ import logoSymbol from '../imports/Logo-removebg-preview.png';
 import logoName from '../imports/Name_-removebg-preview.png';
 import logoNameTitle from '../imports/Name_and_Title-removebg-preview.png';
 
-export const C = {
+export const C: Record<string, string> & { bg: string } = {
   bg: '#0D1117', card: '#1C1F2E', elevated: '#252A3A', border: '#2D3548',
   text: '#FFFFFF', sub: '#A0AEC0', muted: '#8590A6', cyan: '#00D2FF', indigo: '#6366F1', violet: '#7C3AED',
   success: '#00E676', warning: '#FFC107', error: '#FF5252',
+  headerBg: '', cardGrad: '', cardGrad2: '', drawerBg: '', track: '', shadow: '', overlay: '', overlayStrong: '', onAccent: '', disabledBg: '', outer: '', splash: '', dashHeader: '', frameShadow: '',
 };
 
 const glow = 'drop-shadow(0 0 10px rgba(0,210,255,0.28))';
@@ -24,8 +26,8 @@ export function Btn({ children, onClick, disabled, variant = 'primary', style, s
   const bg = variant === 'primary' ? 'linear-gradient(135deg,#4F46E5,#7C3AED)' : variant === 'cyan' ? 'linear-gradient(135deg,#00D2FF,#6366F1)' : C.card;
   return (
     <button className="pressable" onClick={onClick} disabled={disabled} style={{
-      width: '100%', minHeight: small ? 44 : 52, borderRadius: 14, border: variant === 'ghost' ? `1px solid ${C.border}` : 'none',
-      background: disabled ? '#252A3A' : bg, color: disabled ? C.muted : '#fff', fontFamily: 'Poppins', fontWeight: 600, fontSize: small ? 13 : 15,
+      width: '100%', minHeight: small ? 44 : 52, borderRadius: 14, borderWidth: variant === 'ghost' ? 1 : 0, borderStyle: 'solid', borderColor: C.border,
+      background: disabled ? C.disabledBg : bg, color: disabled ? C.muted : variant === 'ghost' ? C.text : '#fff', fontFamily: 'Poppins', fontWeight: 600, fontSize: small ? 13 : 15,
       cursor: disabled ? 'not-allowed' : 'pointer', boxShadow: disabled || variant === 'ghost' ? 'none' : '0 6px 20px rgba(99,102,241,0.35)',
       transition: 'background .2s, box-shadow .2s, transform .12s', ...style,
     }}>{children}</button>
@@ -33,15 +35,18 @@ export function Btn({ children, onClick, disabled, variant = 'primary', style, s
 }
 
 export function Card({ children, onClick, style, selected, accent = C.cyan }: { children: ReactNode; onClick?: () => void; style?: CSSProperties; selected?: boolean; accent?: string }) {
-  const Tag = onClick ? 'button' : 'div';
+  const a11y = onClick ? {
+    role: 'button' as const, tabIndex: 0,
+    onKeyDown: (e: React.KeyboardEvent) => { if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onClick(); } },
+  } : {};
   return (
-    <Tag onClick={onClick} className={onClick ? 'pressable' : undefined} style={{
+    <div {...a11y} onClick={onClick} className={onClick ? 'pressable' : undefined} style={{
       display: 'block', width: '100%', textAlign: 'left', color: C.text, font: 'inherit',
-      background: C.card, border: `1px solid ${selected ? accent : C.border}`, borderRadius: 18, padding: 16,
-      boxShadow: selected ? `0 0 0 1px ${accent}, 0 0 22px ${accent}40` : '0 4px 20px rgba(0,0,0,0.25)',
+      background: C.card, borderWidth: 1, borderStyle: 'solid', borderColor: selected ? accent : C.border, borderRadius: 18, padding: 16,
+      boxShadow: selected ? `0 0 0 1px ${accent}, 0 0 22px ${accent}40` : C.shadow,
       transform: selected ? 'scale(1.015)' : 'none', cursor: onClick ? 'pointer' : 'default',
       transition: 'border-color .22s, box-shadow .22s, transform .22s', ...style,
-    }}>{children}</Tag>
+    }}>{children}</div>
   );
 }
 
@@ -49,7 +54,7 @@ export function Bar({ value, color = C.cyan, delay = 0, height = 8 }: { value: n
   const [w, setW] = useState(0);
   useEffect(() => { const t = setTimeout(() => setW(value), 60 + delay); return () => clearTimeout(t); }, [value, delay]);
   return (
-    <div style={{ height, borderRadius: height, background: '#12151F', overflow: 'hidden' }}>
+    <div style={{ height, borderRadius: height, background: C.track, overflow: 'hidden' }}>
       <div style={{ height: '100%', width: `${w}%`, borderRadius: height, background: `linear-gradient(90deg, ${color}, ${color}CC)`, transition: 'width .9s cubic-bezier(.22,.8,.3,1)', boxShadow: `0 0 10px ${color}66` }} />
     </div>
   );
@@ -58,9 +63,9 @@ export function Bar({ value, color = C.cyan, delay = 0, height = 8 }: { value: n
 export const Chip = ({ label, selected, onClick, icon }: { label: string; selected?: boolean; onClick?: () => void; icon?: string }) => (
   <button className="pressable" onClick={onClick} aria-pressed={selected} style={{
     minHeight: 40, padding: '8px 14px', borderRadius: 12, cursor: 'pointer', fontFamily: 'Inter', fontSize: 13, fontWeight: 500,
-    border: `1px solid ${selected ? C.cyan : C.border}`, background: selected ? 'rgba(0,210,255,0.12)' : C.card,
+    borderWidth: 1, borderStyle: 'solid', borderColor: selected ? C.cyan : C.border, background: selected ? 'rgba(0,210,255,0.12)' : C.card,
     color: selected ? C.cyan : C.sub, transition: 'all .2s',
-  }}>{icon && <span style={{ marginRight: 6 }}>{icon}</span>}{selected && '✓ '}{label}</button>
+  }}>{icon && <span style={{ marginRight: 6, display: "inline-flex", verticalAlign: "middle" }}><Ico e={icon} size={14} /></span>}{selected && '✓ '}{label}</button>
 );
 
 export const Pill = ({ text, color = C.cyan }: { text: string; color?: string }) => (
@@ -80,7 +85,7 @@ export const Label = ({ children }: { children: ReactNode }) => (
 
 export const Input = (p: React.InputHTMLAttributes<HTMLInputElement>) => (
   <input {...p} style={{
-    width: '100%', height: 48, borderRadius: 12, border: `1px solid ${C.border}`, background: C.card, color: C.text,
+    width: '100%', height: 48, borderRadius: 12, borderWidth: 1, borderStyle: 'solid', borderColor: C.border, background: C.card, color: C.text,
     padding: '0 14px', fontSize: 14, fontFamily: 'Inter', outline: 'none', ...p.style,
   }} onFocus={e => (e.currentTarget.style.borderColor = C.cyan)} onBlur={e => (e.currentTarget.style.borderColor = C.border)} />
 );
@@ -103,7 +108,7 @@ export function Screen({ title, subtitle, children, onBack, right, footer, noBac
   return (
     <div className="w-full h-full flex flex-col" style={{ background: C.bg }}>
       {title !== undefined && (
-        <div style={{ padding: '52px 16px 14px', borderBottom: `1px solid ${C.border}`, background: 'linear-gradient(160deg,#0D1117,#141A2A)', flexShrink: 0 }}>
+        <div style={{ padding: '52px 16px 14px', borderBottom: `1px solid ${C.border}`, background: C.headerBg, flexShrink: 0 }}>
           <div className="flex items-center" style={{ gap: 12 }}>
             {!noBack && (
               <button aria-label="Back" className="pressable" onClick={onBack ?? back} style={{ width: 40, height: 40, borderRadius: 12, background: C.card, border: `1px solid ${C.border}`, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><BackIcon /></button>
@@ -124,7 +129,7 @@ export function Screen({ title, subtitle, children, onBack, right, footer, noBac
 
 export function LoadingOverlay({ message }: { message: string }) {
   return (
-    <div className="modal-fade" style={{ position: 'absolute', inset: 0, zIndex: 90, background: 'rgba(13,17,23,0.96)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+    <div className="modal-fade" style={{ position: 'absolute', inset: 0, zIndex: 90, background: C.overlayStrong, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
       <div className="logo-pulse"><BrandSymbol height={72} /></div>
       <p style={{ margin: 0, color: C.sub, fontSize: 14 }}>{message}</p>
     </div>
@@ -133,14 +138,14 @@ export function LoadingOverlay({ message }: { message: string }) {
 
 export function Modal({ children, onClose }: { children: ReactNode; onClose: () => void }) {
   return (
-    <div className="modal-fade" onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 80, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+    <div className="modal-fade" onClick={onClose} style={{ position: 'absolute', inset: 0, zIndex: 80, background: C.overlay, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
       <div className="modal-pop" onClick={e => e.stopPropagation()} style={{ width: '100%', background: C.card, border: `1px solid ${C.border}`, borderRadius: 22, padding: 22 }}>{children}</div>
     </div>
   );
 }
 
 export const LockedBox = ({ onCta, cta = 'Continue Exploring' }: { onCta?: () => void; cta?: string }) => (
-  <Card style={{ background: 'linear-gradient(135deg,#1C1F2E,#171B2B)', borderStyle: 'dashed' }}>
+  <Card style={{ background: C.cardGrad2, borderStyle: 'dashed' }}>
     <div className="flex items-start" style={{ gap: 12 }}>
       <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(99,102,241,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={C.sub} strokeWidth="2" strokeLinecap="round"><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 018 0v4" /></svg>

@@ -2,6 +2,7 @@ import { useApp } from '../state';
 import DashboardShell, { FactCard } from '../components/DashboardShell';
 import { Card, Bar, Pill, C } from '../components/ui';
 import { activitiesByLevel } from '../data/activities';
+import { academicEvidence } from '../data/academic';
 import { degrees, profileReadiness } from '../data/careers';
 import { Section, ReadyBanner, HeroCard, useSessionHero, InterestBars, ClusterPreview, ActivitiesPreview, VideoCard, ChipRow } from './dashboardParts';
 
@@ -10,7 +11,7 @@ export default function AdvancedDashboard() {
   const eyebrow = useSessionHero();
   const readiness = profileReadiness(profile);
   const cats = Array.from(new Set(degrees.map(d => d.category))).slice(0, 8);
-  const rColor = readiness === 'On Track' ? C.success : readiness === 'Building' ? C.warning : C.error;
+  const rColor = readiness === 'On Track' ? C.success : readiness === 'Building' ? C.warning : readiness === 'Needs Improvement' ? C.error : C.sub;
   return (
     <DashboardShell greetingSub={profileReady ? 'Profile ready: review career areas and degree fields' : 'Building your interest profile'}>
       <ReadyBanner />
@@ -30,7 +31,7 @@ export default function AdvancedDashboard() {
         <Card onClick={() => nav(profileReady ? 'roadmap' : 'clusters')}>
           <div className="flex items-center justify-between"><span style={{ fontSize: 13, fontWeight: 600 }}>{profile.studyGroup || 'Study group not set'}</span><Pill text={readiness} color={rColor} /></div>
           <p style={{ margin: '8px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>
-            {profile.overallPercentage ? `Overall result: ${profile.overallPercentage}%. ` : ''}Academic readiness reflects your marks and is separate from interest: a strong interest can be pursued with focused preparation.
+            {readiness === 'Result unavailable' ? 'Academic information pending. ' : readiness === 'Preliminary Readiness' ? 'Add your latest academic result for more detailed readiness guidance. ' : `${academicEvidence(profile).record?.resultType ?? 'Result'}: ${Math.round(academicEvidence(profile).overall ?? 0)}%. `}Academic readiness reflects your marks and is separate from interest: a strong interest can be pursued with focused preparation.
           </p>
         </Card>
       </Section>

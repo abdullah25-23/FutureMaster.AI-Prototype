@@ -1,6 +1,8 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp } from '../state';
 import { Btn, Card, C, Chip, Modal, Pill, Screen } from '../components/ui';
+import { relatedVideoForDegree } from '../data/videos';
 import { careerById, Degree, degreeCategories, degrees } from '../data/careers';
 
 export default function DegreeExplorerScreen() {
@@ -14,7 +16,7 @@ export default function DegreeExplorerScreen() {
     const s = savedDegrees.includes(d.id);
     return (
       <button className="pressable" onClick={e => { e.stopPropagation(); toggleDegree(d.id); }} aria-pressed={s} style={{ flex: flex ? 1 : undefined, minHeight: 44, padding: '0 16px', borderRadius: 12, cursor: 'pointer', background: s ? 'rgba(0,210,255,0.12)' : 'transparent', border: `1px solid ${s ? C.cyan : C.border}`, color: s ? C.cyan : C.text, fontWeight: 600, fontSize: 13 }}>
-        {s ? '★ Saved' : '☆ Save'}
+        <Ico e="Star" size={14} style={{ marginRight: 4, verticalAlign: 'middle', fill: s ? 'currentColor' : 'none' }} />{s ? 'Saved' : 'Save'}
       </button>
     );
   };
@@ -36,6 +38,10 @@ export default function DegreeExplorerScreen() {
             <p style={{ margin: '8px 0 0', fontSize: 12 }}><span style={{ color: C.muted }}>Related subjects: </span>{d.subjects.join(', ')}</p>
             <p style={{ margin: '4px 0 0', fontSize: 12 }}><span style={{ color: C.muted }}>Related careers: </span>{names(d).slice(0, 3).map(c => c.name).join(', ')}</p>
             <p style={{ margin: '8px 0 12px', fontSize: 12, color: C.cyan, lineHeight: 1.45 }}>Pathway relevance: {d.relevance}</p>
+            {(() => { const rv = relatedVideoForDegree(d.id); return rv ? (
+              <button className="pressable" onClick={() => nav('videos', { videoId: rv.id })} style={{ display: 'block', width: '100%', textAlign: 'left', margin: '0 0 12px', padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: C.sub, fontSize: 12, minHeight: 32 }}>
+                <span style={{ color: C.muted }}>Related video: </span><span style={{ color: C.text }}><Ico e="Play" size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />{rv.title}</span>
+              </button>) : null; })()}
             <div className="flex" style={{ gap: 8 }}>
               <div style={{ flex: 1 }}><Btn small onClick={() => setOpen(d)}>Explore</Btn></div>
               {saveBtn(d)}
@@ -54,7 +60,7 @@ export default function DegreeExplorerScreen() {
             <div className="flex flex-wrap" style={{ gap: 6 }}>{open.subjects.map(s => <Pill key={s} text={s} color={C.sub} />)}</div>
             <p style={{ margin: '12px 0 6px', fontSize: 12, fontWeight: 600 }}>Related careers</p>
             {names(open).map(c => (
-              <button key={c.id} className="pressable" onClick={() => { setOpen(null); nav('why-career', { clusterId: c.clusterId, careerId: c.id }); }} style={{ display: 'block', width: '100%', textAlign: 'left', minHeight: 44, padding: '8px 12px', marginBottom: 6, borderRadius: 12, background: C.elevated, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, cursor: 'pointer' }}>{c.icon} {c.name} <span style={{ color: C.cyan, float: 'right' }}>→</span></button>
+              <button key={c.id} className="pressable" onClick={() => { setOpen(null); nav('why-career', { clusterId: c.clusterId, careerId: c.id }); }} style={{ display: 'block', width: '100%', textAlign: 'left', minHeight: 44, padding: '8px 12px', marginBottom: 6, borderRadius: 12, background: C.elevated, border: `1px solid ${C.border}`, color: C.text, fontSize: 13, cursor: 'pointer' }}><span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}><Ico e={c.icon} size={16} color={C.cyan} />{c.name}</span> <span style={{ color: C.cyan, float: 'right' }}>→</span></button>
             ))}
             <p style={{ margin: '10px 0 14px', fontSize: 12, color: C.sub, lineHeight: 1.5 }}>{open.relevance} Always check current entry requirements with each institution.</p>
             <div className="flex" style={{ gap: 8 }}>

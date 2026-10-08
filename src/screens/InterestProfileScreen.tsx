@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useApp } from '../state';
 import { dimensionMeta } from '../data/content';
 import { Bar, Btn, C, Card, LockedBox, Screen, SectionTitle } from '../components/ui';
@@ -11,7 +12,7 @@ export default function InterestProfileScreen() {
     <Screen title="My Interests" subtitle="What you enjoy and prefer" onBack={back}>
       {empty && (
         <Card style={{ marginBottom: 16, textAlign: 'center' }}>
-          <div style={{ fontSize: 34 }}>🌱</div>
+          <div style={{ color: C.success }}><Ico e="Sprout" size={34} /></div>
           <p style={{ margin: '8px 0 4px', fontFamily: 'Poppins', fontWeight: 700 }}>Your profile is just starting</p>
           <p style={{ margin: 0, fontSize: 13, color: C.sub, lineHeight: 1.5 }}>Answer a few exploration questions and your interests will begin to appear here.</p>
         </Card>

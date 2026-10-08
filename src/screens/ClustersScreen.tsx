@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp } from '../state';
 import { Bar, Card, C, LockedBox, Pill, Screen, SectionTitle } from '../components/ui';
@@ -22,7 +23,7 @@ export default function ClustersScreen() {
       <div key={c.id} className="stagger" style={{ '--i': i, marginBottom: 10 } as React.CSSProperties}>
         <Card onClick={() => open(c)}>
           <div className="flex items-center" style={{ gap: 12 }}>
-            <div style={{ width: 46, height: 46, borderRadius: 14, background: `${c.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{c.icon}</div>
+            <div style={{ width: 46, height: 46, borderRadius: 14, background: `${c.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: c.color, flexShrink: 0 }}><Ico e={c.icon} size={22} /></div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div className="flex items-center justify-between" style={{ gap: 8 }}>
                 <p style={{ margin: 0, fontWeight: 600, fontSize: 14, fontFamily: 'Poppins' }}>{c.name}</p>

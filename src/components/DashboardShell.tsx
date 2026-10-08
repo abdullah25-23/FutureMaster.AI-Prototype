@@ -1,3 +1,4 @@
+import { Ico } from './Icon';
 import { ReactNode, useState } from 'react';
 import { useApp } from '../state';
 import { careerFacts } from '../data/content';
@@ -14,7 +15,7 @@ export default function DashboardShell({ children, greetingSub }: { children: Re
   return (
     <div className="w-full h-full flex flex-col relative" style={{ background: C.bg }}>
       <Drawer open={open} onClose={() => setOpen(false)} />
-      <div style={{ background: 'linear-gradient(160deg,#0D1117,#111525 60%,#141A2A)', padding: '50px 16px 16px', borderRadius: '0 0 22px 22px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+      <div style={{ background: C.dashHeader, padding: '50px 16px 16px', borderRadius: '0 0 22px 22px', borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
         <div className="flex items-center justify-between">
           <button aria-label="Open menu" className="pressable" onClick={() => setOpen(true)} style={btn}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={C.sub} strokeWidth="2" strokeLinecap="round"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
@@ -26,7 +27,7 @@ export default function DashboardShell({ children, greetingSub }: { children: Re
           </button>
         </div>
         <div style={{ marginTop: 14 }}>
-          <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{greet} 👋</p>
+          <p style={{ margin: 0, fontSize: 13, color: C.muted }}>{greet}</p>
           <h2 style={{ margin: '2px 0 0', fontSize: 22, fontWeight: 700 }}>{firstName}</h2>
           <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub }}>{greetingSub}</p>
         </div>
@@ -45,8 +46,8 @@ function FactInner({ level, idx, next }: { level: EducationLevel; idx: number; n
   return (
     <div key={idx} className="pop-in" style={{ borderRadius: 18, padding: 16, background: 'linear-gradient(135deg,rgba(0,210,255,0.10),rgba(99,102,241,0.12))', border: '1px solid rgba(0,210,255,0.25)' }}>
       <div className="flex items-center justify-between">
-        <span style={{ fontSize: 12, fontWeight: 700, color: C.cyan, fontFamily: 'Poppins' }}>💡 Career Fact</span>
-        <button className="pressable" onClick={next} style={{ background: 'none', border: 'none', color: C.sub, fontSize: 12, cursor: 'pointer', minHeight: 32 }}>Another fact ↻</button>
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.cyan, fontFamily: 'Poppins' }}><Ico e="Lightbulb" size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Career Fact</span>
+        <button className="pressable" onClick={next} style={{ background: 'none', border: 'none', color: C.sub, fontSize: 12, cursor: 'pointer', minHeight: 32 }}>Another fact<Ico e="RefreshCw" size={12} style={{ marginLeft: 4, verticalAlign: 'middle' }} /></button>
       </div>
       <p style={{ margin: '8px 0 0', fontSize: 13, lineHeight: 1.55, color: C.text }}>{facts[idx % facts.length]}</p>
     </div>

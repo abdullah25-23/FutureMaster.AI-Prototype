@@ -10,12 +10,19 @@ export default function SessionResultScreen() {
   return (
     <Screen noBack title="" footer={
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {checkpoint && profileReady
-          ? <Btn variant="cyan" onClick={() => loadNav('Finding career areas worth exploring...', 'clusters')}>Explore Career Areas</Btn>
-          : checkpoint
-          ? <Btn onClick={() => loadNav('Preparing your next exploration...', 'assessment')}>Continue Exploring</Btn>
-          : <Btn onClick={() => nav('interest-profile')}>{n === 1 ? 'See My Interest Profile' : 'View My Interest Profile'}</Btn>}
-        <Btn variant="ghost" small onClick={() => go('dashboard')}>Go to Dashboard</Btn>
+        {n === 1 ? <>
+          <Btn onClick={() => nav('interest-profile')}>See My Interest Profile</Btn>
+          <Btn variant="ghost" onClick={() => go('dashboard')}>Go to Dashboard</Btn>
+        </> : n === 2 ? <>
+          <Btn onClick={() => go('dashboard')}>Go to Dashboard</Btn>
+          <Btn variant="ghost" onClick={() => nav('interest-profile')}>View My Interest Profile</Btn>
+        </> : <>
+          {profileReady
+            ? <Btn variant="cyan" onClick={() => loadNav('Finding career areas worth exploring...', 'clusters')}>Explore Career Areas</Btn>
+            : <Btn onClick={() => loadNav('Preparing your next exploration...', 'assessment')}>Continue Exploring</Btn>}
+          <Btn variant="ghost" onClick={() => go('dashboard')}>Go to Dashboard</Btn>
+          <button onClick={() => nav('interest-profile')} style={{ background: 'none', border: 'none', color: C.cyan, fontSize: 13, fontWeight: 600, minHeight: 36, cursor: 'pointer' }}>View My Interest Profile</button>
+        </>}
       </div>}>
       <div style={{ paddingTop: 60, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
         <CheckAnim size={76} />

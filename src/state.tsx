@@ -1,19 +1,21 @@
 import { createContext, ReactNode, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { academicEvidence } from './data/academic';
 import { DimensionKey, EducationLevel, InterestDimensions, NavParams, QuestionOption, Screen, StudentProfile } from './types';
 import { pickQuestion, Question } from './data/questions';
 import { levelMeta } from './data/content';
+import { videoById } from './data/videos';
 
 export const SESSION_LENGTH = 4;
 export const MIN_SESSIONS = 3;
 export const LEVEL_ORDER: EducationLevel[] = ['beginner', 'intermediate', 'advanced'];
 
 export interface StageEntry { level: EducationLevel; classes: string; title: string; status: 'completed' | 'current' | 'future' | 'skipped' }
-export interface PriorStage { level: EducationLevel; currentClass: string; studyGroup: string; favouriteSubjects: string[]; difficultSubjects: string[]; subjectMarks: Record<string, string>; overallPercentage: string; futureFields: string[] }
+export interface PriorStage { level: EducationLevel; currentClass: string; studyGroup: string; favouriteSubjects: string[]; difficultSubjects: string[]; subjectMarks: Record<string, string>; overallPercentage: string; academicResultType: string; academicResultStatus: string; academicYear: string; futureFields: string[] }
 export interface ResponseLog { questionId: string; level: EducationLevel | null; optionLabel: string | null; session: number }
 
 const emptyProfile: StudentProfile = {
   name: '', email: '', educationLevel: null, currentClass: '', age: '', schoolName: '', studyGroup: '',
-  favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, overallPercentage: '',
+  favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, overallPercentage: '', academicResultType: '', academicResultStatus: '', academicYear: '', resultSubjects: [], assessmentSource: '', priorAcademic: null,
   futureIdeas: '', futureFields: [], activities: [], careerGoal: '',
 };
 
@@ -115,7 +117,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setTimeout(() => { setLoading(null); nav(screen, params); }, 800);
   }, [nav]);
 
-  const setLevel = (l: EducationLevel) => { setLevelState(l); setCompletedLevels([]); setPriorStages([]); setTransitionFrom(null); setNeedsRefresh(false); setProfile(p => ({ ...p, educationLevel: l, currentClass: '', studyGroup: '', favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, futureFields: [], futureIdeas: '', activities: [] })); };
+  const setLevel = (l: EducationLevel) => { setLevelState(l); setCompletedLevels([]); setPriorStages([]); setTransitionFrom(null); setNeedsRefresh(false); setProfile(p => ({ ...p, educationLevel: l, currentClass: '', studyGroup: '', favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, overallPercentage: '', academicResultType: '', academicResultStatus: '', academicYear: '', resultSubjects: [], assessmentSource: '', priorAcademic: null, futureFields: [], futureIdeas: '', activities: [] })); };
   const updateProfile = (p: Partial<StudentProfile>) => setProfile(prev => ({ ...prev, ...p }));
 
   const signUp = (name: string, email: string) => { setProfile(p => ({ ...p, name: name.trim(), email: email.trim() })); };
@@ -147,11 +149,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const advanceLevel = () => {
     if (!level || !nextLevel) return;
-    setPriorStages(p => [...p, { level, currentClass: profile.currentClass, studyGroup: profile.studyGroup, favouriteSubjects: profile.favouriteSubjects, difficultSubjects: profile.difficultSubjects, subjectMarks: profile.subjectMarks, overallPercentage: profile.overallPercentage, futureFields: profile.futureFields }]);
+    setPriorStages(p => [...p, { level, currentClass: profile.currentClass, studyGroup: profile.studyGroup, favouriteSubjects: profile.favouriteSubjects, difficultSubjects: profile.difficultSubjects, subjectMarks: profile.subjectMarks, overallPercentage: profile.overallPercentage, academicResultType: profile.academicResultType, academicResultStatus: profile.academicResultStatus, academicYear: profile.academicYear, futureFields: profile.futureFields }]);
     setCompletedLevels(c => (c.includes(level) ? c : [...c, level]));
     setTransitionFrom(level); setNeedsRefresh(true); stageAnswersRef.current = 0;
     setLevelState(nextLevel);
-    setProfile(p => ({ ...p, educationLevel: nextLevel, currentClass: '', studyGroup: '', favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, overallPercentage: '' }));
+    setProfile(p => {
+      const ev = academicEvidence(p);
+      const keep = ev.state === 'official' || ev.state === 'previous';
+      return { ...p, educationLevel: nextLevel, currentClass: '', studyGroup: '', favouriteSubjects: [], difficultSubjects: [], subjectMarks: {}, overallPercentage: '', academicResultType: '', academicResultStatus: '', academicYear: '', resultSubjects: [], assessmentSource: '',
+        priorAcademic: keep && ev.record ? { resultType: ev.record.resultType, academicYear: ev.record.academicYear, overall: ev.overall, subjectMarks: Object.fromEntries(ev.subjects.map(x => [x.subject, String(x.percentage)])) } : p.priorAcademic };
+    });
     setSessionAnswered(0);
     nav('stage-transition');
   };
@@ -213,7 +220,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
   const rateVideo = (id: string, rating: number) => {
     setVF(v => ({ ...v, [id]: rating }));
-    confRef.current = Math.min(95, confRef.current + 1); setConfidence(confRef.current);
+    const vid = videoById(id);
+    if (vid && rating >= 4) {
+      const nd = { ...dimsRef.current, [vid.dim]: Math.min(96, dimsRef.current[vid.dim] + (rating === 5 ? 2 : 1)) };
+      dimsRef.current = nd; setDims(nd);
+    }
+    if (rating >= 4) { confRef.current = Math.min(95, confRef.current + 1); setConfidence(confRef.current); }
   };
   const toggle = (set: React.Dispatch<React.SetStateAction<string[]>>) => (id: string) => set(a => (a.includes(id) ? a.filter(x => x !== id) : [...a, id]));
   const exploreCluster = (id: string) => setEC(a => (a.includes(id) ? a : [...a, id]));

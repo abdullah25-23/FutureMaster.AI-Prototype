@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp } from '../state';
 import { Btn, BrandSymbol, C, Card, Screen } from '../components/ui';
@@ -22,13 +23,13 @@ export default function LevelScreen() {
               <div key={l} className="stagger" style={{ '--i': i } as React.CSSProperties}>
                 <Card selected={on} accent={m.accent} onClick={() => setSel(l)} style={{ padding: 18 }}>
                   <div className="flex items-center" style={{ gap: 14 }}>
-                    <div style={{ width: 54, height: 54, borderRadius: 16, fontSize: 28, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${m.accent}1A`, border: `1px solid ${m.accent}40`, flexShrink: 0 }}>{m.icon}</div>
+                    <div style={{ width: 54, height: 54, borderRadius: 16, color: m.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${m.accent}1A`, border: `1px solid ${m.accent}40`, flexShrink: 0 }}><Ico e={m.icon} size={28} /></div>
                     <div style={{ flex: 1 }}>
                       <p style={{ margin: 0, fontFamily: 'Poppins', fontWeight: 700, fontSize: 17, textTransform: 'uppercase', letterSpacing: 0.5 }}>{m.label}</p>
                       <p style={{ margin: '1px 0 0', fontSize: 13, fontWeight: 600, color: m.accent }}>{m.classes}</p>
                       <p style={{ margin: '1px 0 0', fontSize: 12, fontWeight: 600, color: C.text }}>{m.title}</p>
                     </div>
-                    <div style={{ width: 24, height: 24, borderRadius: '50%', border: `2px solid ${on ? m.accent : C.border}`, background: on ? m.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0D1117', fontSize: 13, fontWeight: 800, transition: 'all .2s' }}>{on && '✓'}</div>
+                    <div style={{ width: 24, height: 24, borderRadius: '50%', border: `2px solid ${on ? m.accent : C.border}`, background: on ? m.accent : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.onAccent, fontSize: 13, fontWeight: 800, transition: 'all .2s' }}>{on && '✓'}</div>
                   </div>
                   <p style={{ margin: '12px 0 0', fontSize: 13, color: C.sub, lineHeight: 1.5 }}>{m.desc}</p>
                 </Card>

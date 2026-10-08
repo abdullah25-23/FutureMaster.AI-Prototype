@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp, SESSION_LENGTH, MIN_SESSIONS } from '../state';
 import { C, Card, Screen } from '../components/ui';
@@ -36,12 +37,12 @@ export default function AssessmentScreen() {
       <div key={q.id} className="pop-in">
         {note && (
           <div style={{ marginBottom: 14, padding: '10px 12px', borderRadius: 12, background: 'rgba(0,210,255,0.08)', border: '1px solid rgba(0,210,255,0.25)', fontSize: 12, lineHeight: 1.5, color: C.sub }}>
-            <span style={{ color: C.cyan, fontWeight: 700 }}>✦ Adapting to you · </span>{note}
+            <span style={{ color: C.cyan, fontWeight: 700 }}><Ico e="Sparkles" size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />Adapting to you · </span>{note}
           </div>
         )}
-        <Card style={{ padding: 20, marginBottom: 16, background: 'linear-gradient(145deg,#1C1F2E,#202545)' }}>
+        <Card style={{ padding: 20, marginBottom: 16, background: C.cardGrad }}>
           <div className="flex items-center" style={{ gap: 8, marginBottom: 10 }}>
-            <span style={{ fontSize: 22 }}>{q.emoji}</span>
+            <Ico e={q.emoji} size={22} color={C.cyan} />
             <span style={{ fontSize: 11, fontWeight: 700, color: C.cyan, textTransform: 'uppercase', letterSpacing: 0.8 }}>{q.scenario}</span>
           </div>
           <h2 style={{ margin: 0, fontSize: level === 'beginner' ? 19 : 18, lineHeight: 1.4 }}>{q.prompt}</h2>

@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp } from '../state';
 import { C, Card, Screen } from '../components/ui';
@@ -17,7 +18,7 @@ export default function NotificationsScreen() {
             <div key={n.id} className="stagger" style={{ ['--i' as string]: i }}>
               <Card onClick={() => { setRead(r => (r.includes(n.id) ? r : [...r, n.id])); nav(n.screen); }} style={{ padding: 14 }}>
                 <div className="flex items-start" style={{ gap: 12 }}>
-                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(99,102,241,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>{n.icon}</div>
+                  <div style={{ width: 40, height: 40, borderRadius: 12, background: 'rgba(99,102,241,0.14)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.indigo, flexShrink: 0 }}><Ico e={n.icon} size={18} /></div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="flex items-center justify-between" style={{ gap: 8 }}>
                       <p style={{ margin: 0, fontSize: 14, fontWeight: isUnread ? 700 : 600 }}>{n.title}</p>

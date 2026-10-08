@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useState } from 'react';
 import { useApp } from '../state';
 import { Bar, Btn, Card, C, Pill, Screen, SectionTitle } from '../components/ui';
@@ -22,7 +23,7 @@ export default function CareerListScreen() {
           <div key={c.id} className="stagger" style={{ '--i': i, marginBottom: 12 } as React.CSSProperties}>
             <Card selected={sel === c.id} accent={cluster.color} onClick={() => setSel(c.id)}>
               <div className="flex items-center" style={{ gap: 12 }}>
-                <div style={{ width: 46, height: 46, borderRadius: 14, background: `${cluster.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{c.icon}</div>
+                <div style={{ width: 46, height: 46, borderRadius: 14, background: `${cluster.color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center', color: cluster.color }}><Ico e={c.icon} size={22} /></div>
                 <div style={{ flex: 1 }}>
                   <p style={{ margin: 0, fontWeight: 700, fontSize: 15, fontFamily: 'Poppins' }}>{c.name}</p>
                   <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub, lineHeight: 1.45 }}>{c.blurb}</p>

@@ -1,3 +1,4 @@
+import { academicEvidence } from './academic';
 import { Cluster, DimensionKey, EducationLevel, Fit, InterestDimensions, Readiness, StudentProfile } from '../types';
 import { dimensionMeta } from './content';
 
@@ -24,40 +25,30 @@ export const clusterFit = (c: Cluster, dims: InterestDimensions) => weightedFit(
 export const careerAlignment = (c: Career, dims: InterestDimensions) => weightedFit(c.weights, dims);
 export const fitLabel = (score: number): Fit => (score >= 70 ? 'Strong' : score >= 50 ? 'Good' : 'Emerging');
 export const fitColor = (f: Fit) => (f === 'Strong' ? '#00E676' : f === 'Good' ? '#00D2FF' : '#A78BFA');
-export const readinessColor = (r: Readiness) => (r === 'On Track' ? '#00E676' : r === 'Building' ? '#00D2FF' : '#FFC107');
+export const readinessColor = (r: Readiness) => (r === 'On Track' ? '#00E676' : r === 'Building' ? '#00D2FF' : r === 'Needs Improvement' ? '#FFC107' : '#94A3B8');
 
-const num = (s: string | undefined): number | null => {
-  const m = (s ?? '').match(/\d+(\.\d+)?/);
-  if (!m) return null;
-  const v = parseFloat(m[0]);
-  return v >= 0 && v <= 100 ? v : null;
-};
 const band = (v: number): Readiness => (v >= 75 ? 'On Track' : v >= 60 ? 'Building' : 'Needs Improvement');
 
-function overallOf(p: StudentProfile): number | null {
-  const o = num(p.overallPercentage);
-  if (o !== null) return o;
-  const vals = Object.values(p.subjectMarks).map(num).filter((v): v is number => v !== null);
-  return vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null;
-}
 export function profileReadiness(p: StudentProfile): Readiness {
-  const v = overallOf(p);
-  return v === null ? 'Building' : band(v);
+  const ev = academicEvidence(p);
+  if (ev.state === 'awaiting') return 'Result unavailable';
+  if (ev.overall === null) return 'Preliminary Readiness';
+  return band(ev.overall);
 }
 
-/** Average marks for a career's key subjects (falls back to overall). Returns null when nothing is available. */
-export function keyMarksFor(career: Career, p: StudentProfile): { value: number; fromKey: boolean } | null {
+/** Average of a career's key subject results from the best available record (falls back to overall). */
+export function keyMarksFor(career: Career, p: StudentProfile): { value: number; fromKey: boolean; lowerConfidence: boolean } | null {
+  const ev = academicEvidence(p);
+  if (ev.overall === null) return null;
   const vals: number[] = [];
   for (const ks of career.keySubjectsForReadiness) {
-    for (const [name, raw] of Object.entries(p.subjectMarks)) {
-      const a = name.toLowerCase(), b = ks.toLowerCase();
-      const v = num(raw);
-      if (v !== null && (a === b || a.includes(b) || b.includes(a))) vals.push(v);
+    for (const r of ev.subjects) {
+      const a = r.subject.toLowerCase(), b = ks.toLowerCase();
+      if (a === b || a.includes(b) || b.includes(a)) vals.push(r.percentage);
     }
   }
-  if (vals.length) return { value: vals.reduce((a, b) => a + b, 0) / vals.length, fromKey: true };
-  const o = overallOf(p);
-  return o === null ? null : { value: o, fromKey: false };
+  if (vals.length) return { value: vals.reduce((a, b) => a + b, 0) / vals.length, fromKey: true, lowerConfidence: ev.lowerConfidence };
+  return { value: ev.overall, fromKey: false, lowerConfidence: ev.lowerConfidence };
 }
 
 export function readinessFor(career: Career, profile: StudentProfile, level: EducationLevel): { readiness: Readiness; summary: string } {
@@ -65,20 +56,23 @@ export function readinessFor(career: Career, profile: StudentProfile, level: Edu
   if (level === 'beginner') {
     return { readiness: 'Building', summary: `${subj} may be useful to strengthen as you progress.` };
   }
+  const ev = academicEvidence(profile);
+  if (ev.state === 'awaiting') return { readiness: 'Result unavailable', summary: 'Your result is still awaiting, so academic readiness is not shown yet. You can add it later.' };
   const m = keyMarksFor(career, profile);
-  if (!m) return { readiness: 'Building', summary: 'Guidance is general until more academic information is available.' };
+  if (!m) return { readiness: 'Preliminary Readiness', summary: 'Academic information is not available yet. Add your latest academic result for more detailed readiness guidance.' };
   const r = band(m.value);
   const basis = m.fromKey ? `your marks in ${subj}` : 'your overall marks';
+  const low = m.lowerConfidence ? ' This uses a current or internal assessment, so treat it as lower confidence.' : '';
   if (level === 'intermediate') {
     const t = r === 'On Track' ? `Based on ${basis}, your early study path looks well aligned.`
       : r === 'Building' ? `Based on ${basis}, you are building a base. Steady practice in ${subj} can help.`
       : `Based on ${basis}, extra practice in ${subj} could open more options later.`;
-    return { readiness: r, summary: t };
+    return { readiness: r, summary: t + low };
   }
   const t = r === 'On Track' ? `${basis[0].toUpperCase() + basis.slice(1)} suggest you are in a good position to review degree routes in this area.`
     : r === 'Building' ? `${basis[0].toUpperCase() + basis.slice(1)} suggest you are building toward this route. Review the applicable entry requirements and plan targeted preparation.`
     : `${basis[0].toUpperCase() + basis.slice(1)} suggest some degree routes here may need additional preparation. Review applicable entry requirements and consider related pathways too.`;
-  return { readiness: r, summary: t };
+  return { readiness: r, summary: t + low };
 }
 
 // ---------- clusters ----------

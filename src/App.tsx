@@ -2,7 +2,8 @@ import { AppProvider, useApp } from './state';
 import MobileFrame from './components/MobileFrame';
 import { LoadingOverlay } from './components/ui';
 import { Screen } from './types';
-import { ComponentType } from 'react';
+import { ComponentType, useCallback, useEffect, useState } from 'react';
+import { ThemeCtx, ThemeMode, applyTheme, readStoredMode, resolveMode } from './theme';
 import SplashScreen from './screens/SplashScreen';
 import LoginScreen from './screens/LoginScreen';
 import SignupScreen from './screens/SignupScreen';
@@ -51,9 +52,23 @@ function Router() {
 }
 
 export default function App() {
+  const [mode, setModeState] = useState<ThemeMode>(readStoredMode);
+  const [sys, setSys] = useState(() => resolveMode('system'));
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const h = () => setSys(mq.matches ? 'light' : 'dark');
+    mq.addEventListener('change', h);
+    return () => mq.removeEventListener('change', h);
+  }, []);
+  const resolved = mode === 'system' ? sys : mode;
+  applyTheme(resolved);
+  const setMode = useCallback((m: ThemeMode) => { setModeState(m); try { localStorage.setItem('fm-theme', m); } catch { /* ignore */ } }, []);
+  const toggle = useCallback(() => setMode(resolved === 'dark' ? 'light' : 'dark'), [resolved, setMode]);
   return (
-    <AppProvider>
-      <MobileFrame><Router /></MobileFrame>
-    </AppProvider>
+    <ThemeCtx.Provider value={{ mode, resolved, setMode, toggle }}>
+      <AppProvider>
+        <MobileFrame><Router /></MobileFrame>
+      </AppProvider>
+    </ThemeCtx.Provider>
   );
 }

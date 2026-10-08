@@ -1,3 +1,4 @@
+import { Ico } from '../components/Icon';
 import { useApp } from '../state';
 import { Btn, Card, C, Screen } from '../components/ui';
 import { careerById, careers } from '../data/careers';
@@ -9,7 +10,7 @@ export default function WhyCareerScreen() {
   return (
     <Screen title="Why this career appeared" footer={<Btn onClick={() => nav('career-details', { careerId: career.id, clusterId: career.clusterId })}>See Career Details</Btn>}>
       <div className="fade-down flex items-center" style={{ gap: 12, marginBottom: 18 }}>
-        <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(99,102,241,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26 }}>{career.icon}</div>
+        <div style={{ width: 52, height: 52, borderRadius: 16, background: 'rgba(99,102,241,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: C.indigo }}><Ico e={career.icon} size={26} /></div>
         <div>
           <h3 style={{ margin: 0, fontSize: 18 }}>{career.name}</h3>
           <p style={{ margin: '2px 0 0', fontSize: 12, color: C.sub }}>Here is what pointed us here</p>

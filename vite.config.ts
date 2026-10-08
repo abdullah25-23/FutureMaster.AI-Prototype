@@ -25,7 +25,9 @@ react(),
       figmaReactRefreshBoundaryFallback(),
       figmaMakeKitPlugin({ storiesGlob: '/src/**/*.stories.{ts,tsx,js,jsx}' }),
     ],
+    optimizeDeps: { include: ['react', 'react-dom', 'lucide-react'] },
     resolve: {
+      dedupe: ['react', 'react-dom'],
       alias: {
         '@': path.resolve(__dirname, './src'),
       },
@@ -273,7 +275,9 @@ function figmaErrorOverlayReplay(): Plugin {
  * the old tree mounted until the page is reloaded.
  */
 function figmaReactRefreshBoundaryFallback(): Plugin {
+  type ModuleNode = import('vite').ModuleNode
   const hadRefreshBoundary = new Map<string, boolean>()
+  const lostRefreshBoundaries = new Set<string>()
   let sendFullReload: (() => void) | null = null
 
   return {
@@ -283,6 +287,29 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
     configureServer(server) {
       sendFullReload = () => server.ws.send({ type: 'full-reload', path: '*' })
     },
+    handleHotUpdate({ modules, server, timestamp }) {
+      if (lostRefreshBoundaries.size === 0) return
+
+      const visited = new Set<ModuleNode>()
+      const pending = [...modules]
+      while (pending.length > 0) {
+        const current = pending.pop()
+        if (!current || visited.has(current)) continue
+        visited.add(current)
+
+        const moduleId = current.id?.split('?')[0]
+        if (moduleId && lostRefreshBoundaries.has(moduleId)) {
+          const invalidated = new Set<ModuleNode>()
+          for (const updatedModule of modules) {
+            server.moduleGraph.invalidateModule(updatedModule, invalidated, timestamp, true)
+          }
+          sendFullReload?.()
+          return []
+        }
+
+        pending.push(...current.importers)
+      }
+    },
     transform(code, id) {
       if (!/\.[jt]sx?(?:\?|$)/.test(id) || id.includes('/node_modules/')) return null
 
@@ -291,7 +318,9 @@ function figmaReactRefreshBoundaryFallback(): Plugin {
       const previousHadRefreshBoundary = hadRefreshBoundary.get(moduleId)
       hadRefreshBoundary.set(moduleId, hasRefreshBoundary)
 
+      if (hasRefreshBoundary) lostRefreshBoundaries.delete(moduleId)
       if (previousHadRefreshBoundary && !hasRefreshBoundary) {
+        lostRefreshBoundaries.add(moduleId)
         queueMicrotask(() => sendFullReload?.())
       }
 

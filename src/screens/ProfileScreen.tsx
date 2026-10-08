@@ -1,4 +1,6 @@
 import { ReactNode, useState } from 'react';
+import { Ico } from '../components/Icon';
+import { useTheme, ThemeMode } from '../theme';
 import { useApp } from '../state';
 import { C, Card, Bar, Chip, Screen, BrandSymbol, Btn, SectionTitle } from '../components/ui';
 import { levelMeta, dimensionMeta } from '../data/content';
@@ -14,6 +16,7 @@ const Sec = ({ title, children }: { title: string; children: ReactNode }) => <se
 
 export default function ProfileScreen() {
   const { profile, level, classLabel, displayName, sessionsCompleted, questionsAnswered, profileConfidence, topDims, savedCareers, nav, logout } = useApp();
+  const theme = useTheme();
   const [notif, setNotif] = useState(true);
   const initials = displayName.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0].toUpperCase()).join('') || 'S';
   const meta = level ? levelMeta[level] : null;
@@ -21,7 +24,7 @@ export default function ProfileScreen() {
   return (
     <Screen title="Profile" right={<BrandSymbol height={28} />}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-        <Card style={{ background: 'linear-gradient(135deg,#1C1F2E,#20254A)' }}>
+        <Card style={{ background: C.cardGrad }}>
           <div className="flex items-center" style={{ gap: 14 }}>
             <div aria-hidden style={{ width: 60, height: 60, borderRadius: '50%', background: 'linear-gradient(135deg,#4F46E5,#7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Poppins', fontWeight: 700, fontSize: 22 }}>{initials}</div>
             <div style={{ minWidth: 0 }}>
@@ -39,7 +42,7 @@ export default function ProfileScreen() {
         </Card>
 
         <Card onClick={() => nav('journey')} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: 14, fontWeight: 600 }}>🗺️ My Journey</span><span style={{ color: C.cyan }}>→</span>
+          <span style={{ fontSize: 14, fontWeight: 600 }}><span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><Ico e="TrendingUp" size={16} color={C.cyan} />My Journey</span></span><span style={{ color: C.cyan }}>→</span>
         </Card>
 
         <Sec title="Favourite Subjects">
@@ -87,6 +90,16 @@ export default function ProfileScreen() {
               <button role="switch" aria-checked={notif} aria-label="Notifications" onClick={() => setNotif(v => !v)} style={{ width: 48, height: 28, borderRadius: 14, border: 'none', cursor: 'pointer', background: notif ? C.indigo : C.elevated, position: 'relative', transition: 'background .2s' }}>
                 <span style={{ position: 'absolute', top: 3, left: notif ? 23 : 3, width: 22, height: 22, borderRadius: '50%', background: '#fff', transition: 'left .2s' }} />
               </button>
+            </div>
+            <div style={{ padding: '10px 0' }}>
+              <span style={{ fontSize: 13 }}>Theme</span>
+              <div role="radiogroup" aria-label="Theme" style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+                {([['system', 'System Default', 'Monitor'], ['light', 'Light', 'Sun'], ['dark', 'Dark', 'Moon']] as [ThemeMode, string, string][]).map(([m, l, ic]) => (
+                  <button key={m} role="radio" aria-checked={theme.mode === m} onClick={() => theme.setMode(m)} className="pressable" style={{ flex: 1, minHeight: 44, borderRadius: 12, cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2, fontSize: 11, fontWeight: 600, border: `1px solid ${theme.mode === m ? C.cyan : C.border}`, background: theme.mode === m ? `${C.cyan}1F` : C.elevated, color: theme.mode === m ? C.cyan : C.sub }}>
+                    <Ico e={ic} size={16} />{l}
+                  </button>
+                ))}
+              </div>
             </div>
             <Row label="Language" value="English" />
           </Card>

@@ -27,6 +27,12 @@ export interface StudentProfile {
   difficultSubjects: string[];
   subjectMarks: Record<string, string>;
   overallPercentage: string;
+  academicResultType: string;
+  academicResultStatus: string;
+  academicYear: string;
+  resultSubjects: string[];
+  assessmentSource: '' | 'official' | 'internal';
+  priorAcademic: { resultType: string; academicYear: string; overall: number | null; subjectMarks: Record<string, string> } | null;
   futureIdeas: '' | 'yes' | 'unsure' | 'not-yet';
   futureFields: string[];
   activities: string[];
@@ -50,7 +56,7 @@ export interface Cluster {
 }
 
 export type Fit = 'Strong' | 'Good' | 'Emerging';
-export type Readiness = 'On Track' | 'Building' | 'Needs Improvement';
+export type Readiness = 'On Track' | 'Building' | 'Needs Improvement' | 'Result unavailable' | 'Preliminary Readiness';
 
 export interface QuestionOption {
   id: string;
