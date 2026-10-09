@@ -230,7 +230,9 @@ export function pickQuestion(s: QuestionState): { question: Question; note?: str
   const pool = unasked.length ? unasked : forLevel.filter(q => !q.once);
   const branch = pool.find(q => q.requiresTag && s.tags.includes(q.requiresTag));
   if (branch) return { question: branch, note: branch.note };
-  const open = pool.filter(q => !q.requiresTag);
+  let open = pool.filter(q => !q.requiresTag);
+  if (!open.length) open = forLevel.filter(q => !q.requiresTag);
+  if (!open.length) open = forLevel.length ? forLevel : questionBank.filter(q => !q.requiresTag);
   let best = open[0]; let bestScore = -1;
   for (const q of open) {
     const sc = q.targets.reduce((a, d) => a + 1 / (1 + s.evidence[d]), 0) / q.targets.length;
